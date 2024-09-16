@@ -13,7 +13,18 @@
 #ifndef ERROR_H
 # define ERROR_H
 
-int	check_file(char *file_name);
-int	check_file_type(char *file_name);
+# include <stdio.h>
+# include "define.h"
+
+
+
+// Check file
+int		check_file(const char *file_name);
+bool	check_file_type(const char *file_name);
+bool	check_file_content(const char *file_name);
+int		check_type(const char *file_name, char ***tmp_line);
+
+// Error
+void	print_error(const char *message);
 
 #endif

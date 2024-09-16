@@ -1,34 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mrt.h                                              :+:      :+:    :+:   */
+/*   define.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/15 21:17:24 by tluanamn          #+#    #+#             */
-/*   Updated: 2024/09/15 21:17:25 by tluanamn         ###   ########.fr       */
+/*   Created: 2024/09/16 08:57:53 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/09/16 08:57:55 by tluanamn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MRT_H
-# define MRT_H
+#ifndef DEFINE_H
+# define DEFINE_H
 
-# include <stdlib.h>   // For malloc, free, exit
-# include <unistd.h>   // For open, close, read, write
-# include <string.h>   // For strerror
-# include <math.h>     // For all functions of the math library
-# include <stdbool.h>
+// Colour
+# define RST	"\033[0m"
+# define RED	"\033[1;31m"
+# define GREEN	"\033[1;32m"
+# define CYAN	"\033[1;36m"
 
-# include "mlx.h"
-# include "libft.h"
-# include "define.h"
-# include "object.h"
-# include "error.h"
-
-typedef struct s_mrt
-{
-
-}	t_mrt;
-
+// Number of parameters
+# define PARAMS_AMBIENT 3
+# define PARAMS_CAMERA 4
+# define PARAMS_LIGHT 3
+# define PARAMS_PLANE 4
+# define PARAMS_SPHERE 4
+# define PARAMS_CYLINDER 6
 
 #endif

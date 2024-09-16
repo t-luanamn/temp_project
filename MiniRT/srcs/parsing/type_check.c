@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "mrt.h"
+
 /*
 Check type identifier
 
@@ -59,3 +61,16 @@ Number of parameters: 6
 - R,G,B colors in range [0,255]: 10, 0, 255
 */
 
+
+
+int	check_type(const char *file_name, char ***tmp_line)
+{
+	int		fd;
+	char	*line;
+
+	fd = open(file_name, O_RDONLY);
+	line = get_next_line(fd);
+	printf("Check type:\n");
+	close(fd);
+	return (true);
+}

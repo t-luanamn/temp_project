@@ -16,7 +16,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdbool.h>
-
+# include <fcntl.h>
 # include "./gnl/get_next_line.h"
 
 int		ft_isalpha(int i);

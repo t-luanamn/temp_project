@@ -19,7 +19,14 @@ int	main(int ac, char **av)
 	else if (check_file(av[1]) == true)
 	{
 		// Parsing
-		printf("Parsing\n");
+		printf("Check file: True: Parsing\n");
+	}
+	else
+	{
+		// clean everything
+
+		printf("Check file: False\n");
+		exit(EXIT_FAILURE);
 	}
 	return (0);
 }

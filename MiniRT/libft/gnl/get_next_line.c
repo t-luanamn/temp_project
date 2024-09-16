@@ -12,6 +12,30 @@
 
 #include "get_next_line.h"
 
+char	*ft_strjoin_and_free_old(char *old, const char *buf)
+{
+	char	*joined;
+	size_t	old_len;
+	size_t	buf_len;
+	size_t	i;
+	size_t	j;
+
+	old_len = ft_strlen(old);
+	buf_len = ft_strlen(buf);
+	joined = (char *)malloc(sizeof(char) * (old_len + buf_len + 1));
+	if (!joined || !buf)
+		return (NULL);
+	i = -1;
+	while (++i < old_len)
+		joined[i] = old[i];
+	j = -1;
+	while (++j < buf_len)
+		joined[i + j] = buf[j];
+	joined[i + j] = '\0';
+	free(old);
+	return (joined);
+}
+
 static char	*ft_next_line(char **temp)
 {
 	char	*line;

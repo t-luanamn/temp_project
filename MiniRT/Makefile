@@ -1,4 +1,4 @@
-NAME			= miniRT
+NAME			= mrt
 CC				= gcc
 CFLAGS			= -Wall -Wextra -Werror #-g #-fsanitize=address
 
@@ -40,7 +40,7 @@ $(NAME):		$(OBJS)
 				echo $(C)"Making $(NAME)..."$(RST)
 				gcc $(OBJS) $(CFLAGS) $(LIBFT_L) $(LIBMLX_L) -o $(NAME)
 				echo $(C)"$(NAME) compiled"$(RST)
-				echo $(G)"\nLauch: ./$(NAME)\n"$(RST)
+				echo $(G)"\nLauch: ./$(NAME) *.rt\n"$(RST)
 
 clean:
 				echo $(R)"Cleaning..."$(RST)
