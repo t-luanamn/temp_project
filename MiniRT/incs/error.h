@@ -14,15 +14,14 @@
 # define ERROR_H
 
 # include <stdio.h>
+# include <stdbool.h>
 # include "define.h"
 
 
 
 // Check file
-int		check_file(const char *file_name);
-bool	check_file_type(const char *file_name);
-bool	check_file_content(const char *file_name);
-int		check_type(const char *file_name, char ***tmp_line);
+int		check_file(char *file_name);
+bool	check_type(char *file_name, char ****tmp_line);
 
 // Error
 void	print_error(const char *message);

@@ -61,16 +61,79 @@ Number of parameters: 6
 - R,G,B colors in range [0,255]: 10, 0, 255
 */
 
+// read the line; extract text seperate by space " " or tab "\t" and store it in temp_line[][][]
+// File can have multiple empty lines it should be ignored
+/*
+	temp_line structure: temp_line[i][j][k]
+	temp_line[i] stores the line number i
+	temp_line[i][j] stores the word number j of line i
+	temp_line[i][j][k] stores the character number k of word j of line i
+*/
 
+char	*format_line(char *line)
+{
+	char	*token;
+	char	*formatted_line;
 
-int	check_type(const char *file_name, char ***tmp_line)
+	formatted_line = (char *)malloc(BUFFER_SIZE);
+	token = ft_strtok(line, "\t ");
+	while (token != NULL)
+	{
+		ft_strcat(formatted_line, token);
+		ft_strcat(formatted_line, " ");
+		token = ft_strtok(NULL, "\t ");
+	}
+	if (ft_strlen(formatted_line) > 0)
+	{
+		formatted_line[ft_strlen(formatted_line) - 1] = '\0';
+	}
+	return (formatted_line);
+}
+
+bool	read_line(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i] != '\0')
+	{
+		if (line[i] != ' ' && line[i] != '\t')
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+void	save_line(char *line, char ***tmp_line)
+{
+	char	*formatted_line;
+
+	formatted_line = format_line(line);
+	*tmp_line = ft_split(formatted_line, ' ');
+	free(formatted_line);
+}
+
+bool	check_type(char *file_name, char ****tmp_line)
 {
 	int		fd;
 	char	*line;
+	int		i;
 
+	i = 0;
 	fd = open(file_name, O_RDONLY);
-	line = get_next_line(fd);
+	while (true)
+	{
+		line = get_next_line(fd);
+		if (!line)
+			break ;
+		if (read_line(line) == true)
+		{
+			save_line(line, &(*tmp_line)[i]);
+			i++;
+		}
+		free(line);
+	}
 	printf("Check type:\n");
 	close(fd);
-	return (true);
+	return true;
 }

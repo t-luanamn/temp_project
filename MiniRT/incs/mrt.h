@@ -17,7 +17,6 @@
 # include <unistd.h>   // For open, close, read, write
 # include <string.h>   // For strerror
 # include <math.h>     // For all functions of the math library
-# include <stdbool.h>
 
 # include "mlx.h"
 # include "libft.h"
