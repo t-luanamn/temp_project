@@ -1,33 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mrt.h                                              :+:      :+:    :+:   */
+/*   ft_strspn.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/15 21:17:24 by tluanamn          #+#    #+#             */
-/*   Updated: 2024/09/15 21:17:25 by tluanamn         ###   ########.fr       */
+/*   Created: 2024/09/17 21:37:14 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/09/17 21:37:15 by tluanamn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MRT_H
-# define MRT_H
+#include "libft.h"
 
-# include <stdlib.h>   // For malloc, free, exit
-# include <unistd.h>   // For open, close, read, write
-# include <string.h>   // For strerror
-# include <math.h>     // For all functions of the math library
-
-# include "mlx.h"
-# include "libft.h"
-# include "define.h"
-# include "object.h"
-# include "error.h"
-
-typedef struct s_mrt
+size_t	ft_strspn(const char *str, const char *accept)
 {
-	char	***array3D;
-}	t_mrt;
+	size_t		count;
+	const char	*a;
+	bool		char_found;
 
-
-#endif
+	count = 0;
+	while (*str)
+	{
+		a = accept;
+		char_found = false;
+		while (*a)
+		{
+			if (*str == *a)
+			{
+				char_found = true;
+				break ;
+			}
+			++a;
+		}
+		if (!char_found)
+			break ;
+		++count;
+		++str;
+	}
+	return (count);
+}

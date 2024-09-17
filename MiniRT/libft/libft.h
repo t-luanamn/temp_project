@@ -59,5 +59,6 @@ void	ft_putnbr_fd(int n, int fd);
 bool	ft_is_whitespaces(char *s);
 char	*ft_strtok(char *str, const char *delim);
 char	*ft_strcpy(char *dest, char *src);
+size_t	ft_strspn(const char *str, const char *accept);
 
 #endif

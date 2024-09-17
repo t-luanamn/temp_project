@@ -14,19 +14,16 @@
 
 int	main(int ac, char **av)
 {
-	if (ac != 2)
-		perror("Error: ac number\nTry: ./miniRT *.rt\n");
-	else if (check_file(av[1]) == true)
-	{
-		// Parsing
-		printf("Check file: True: Parsing\n");
-	}
-	else
-	{
-		// clean everything
+	//t_mrt	*mrt;
 
-		printf("Check file: False\n");
-		exit(EXIT_FAILURE);
+	if (ac != 2)
+	{
+		print_error("Error: ac number\nTry: ./miniRT *.rt\n");
+		return (EXIT_FAILURE);
 	}
+	if (!check_file(av[1]))
+		return (EXIT_FAILURE);
+	printf("File is correct\n");
+	//parsing(mrt, av[1]);
 	return (0);
 }

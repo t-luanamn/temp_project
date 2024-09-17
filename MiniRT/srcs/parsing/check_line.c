@@ -90,50 +90,72 @@ char	*format_line(char *line)
 	return (formatted_line);
 }
 
-bool	read_line(char *line)
-{
-	int	i;
+// Function to split a formatted line into words and store them in the 3D array
+char ***ft_split_line(char *formatted_line, char ***tmp_line, int *line_idx, int *word_count) {
+    char *token;
+    int word_idx = 0;
 
-	i = 0;
-	while (line[i] != '\0')
-	{
-		if (line[i] != ' ' && line[i] != '\t')
-			return (false);
-		i++;
-	}
-	return (true);
+    token = strtok(formatted_line, " ");
+    while (token != NULL) {
+        tmp_line[*line_idx][word_idx] = strdup(token);  // Store each word
+        token = strtok(NULL, " ");
+        word_idx++;
+    }
+
+    // Update word count for the line
+    word_count[*line_idx] = word_idx;
+    (*line_idx)++;
+    return tmp_line;
 }
 
-void	save_line(char *line, char ***tmp_line)
-{
-	char	*formatted_line;
-
-	formatted_line = format_line(line);
-	*tmp_line = ft_split(formatted_line, ' ');
-	free(formatted_line);
-}
-
-bool	check_type(char *file_name, char ****tmp_line)
+bool	check_line(const char *file_name)
 {
 	int		fd;
 	char	*line;
 	int		i;
+	char	***tmp_line;
+// resize buffer
+	tmp_line = (char ***)malloc(BUFFER_SIZE * sizeof(char **));
+	i = 0;
+	while (i < BUFFER_SIZE)
+	{
+		tmp_line[i] = (char **)malloc(BUFFER_SIZE * sizeof(char *));
+		i++;
+	}
+	int line_idx = 0;
+	int word_count[BUFFER_SIZE] = {0};
+
+	printf("tmp_line:\n");
 
 	i = 0;
 	fd = open(file_name, O_RDONLY);
-	while (true)
+	while (true) // Read the file line by line while not EOF
 	{
 		line = get_next_line(fd);
+
+		printf("line: %s\n", line);
+
 		if (!line)
 			break ;
-		if (read_line(line) == true)
+		if (ft_strlen(line) == 0 || ft_strspn(line, " \t\n") == ft_strlen(line))
 		{
-			save_line(line, &(*tmp_line)[i]);
-			i++;
+			free(line);
+			continue ;
 		}
-		free(line);
+		// Format the line and store in the 3D array
+        char *formatted_line = format_line(line);
+
+		printf("formatted_line: %s\n", formatted_line);
+
+        tmp_line = ft_split_line(formatted_line, tmp_line, &line_idx, word_count);
+        free(formatted_line);
+        free(line);
 	}
 	printf("Check type:\n");
 	close(fd);
-	return true;
+	print_3D_array(tmp_line);
+	return (true);
 }
+
+// recheck allocated memory for tmp_line
+

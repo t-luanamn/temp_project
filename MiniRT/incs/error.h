@@ -20,10 +20,14 @@
 
 
 // Check file
-int		check_file(char *file_name);
-bool	check_type(char *file_name, char ****tmp_line);
+bool	check_file(const char *file_name);
+bool	check_line(const char *file_name);
 
 // Error
 void	print_error(const char *message);
+
+// Debug
+void	print_3D_array(char ***tmp_line);
+
 
 #endif
