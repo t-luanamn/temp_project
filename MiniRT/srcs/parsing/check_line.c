@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mrt.h"
+#include "utils.h"
 
 /*
 Check type identifier
@@ -75,7 +75,7 @@ char	*format_line(char *line)
 	char	*token;
 	char	*formatted_line;
 
-	formatted_line = (char *)malloc(BUFFER_SIZE);
+	formatted_line = (char *)malloc(ft_strlen(line) + 1);
 	token = ft_strtok(line, "\t ");
 	while (token != NULL)
 	{
@@ -90,51 +90,16 @@ char	*format_line(char *line)
 	return (formatted_line);
 }
 
-// Function to split a formatted line into words and store them in the 3D array
-char ***ft_split_line(char *formatted_line, char ***tmp_line, int *line_idx, int *word_count) {
-    char *token;
-    int word_idx = 0;
-
-    token = strtok(formatted_line, " ");
-    while (token != NULL) {
-        tmp_line[*line_idx][word_idx] = strdup(token);  // Store each word
-        token = strtok(NULL, " ");
-        word_idx++;
-    }
-
-    // Update word count for the line
-    word_count[*line_idx] = word_idx;
-    (*line_idx)++;
-    return tmp_line;
-}
-
-bool	check_line(const char *file_name)
+bool check_line(t_mrt *mrt, const char *file_name)
 {
 	int		fd;
 	char	*line;
-	int		i;
-	char	***tmp_line;
-// resize buffer
-	tmp_line = (char ***)malloc(BUFFER_SIZE * sizeof(char **));
-	i = 0;
-	while (i < BUFFER_SIZE)
-	{
-		tmp_line[i] = (char **)malloc(BUFFER_SIZE * sizeof(char *));
-		i++;
-	}
-	int line_idx = 0;
-	int word_count[BUFFER_SIZE] = {0};
+	char	*formatted_line;
 
-	printf("tmp_line:\n");
-
-	i = 0;
 	fd = open(file_name, O_RDONLY);
-	while (true) // Read the file line by line while not EOF
+	while (true)
 	{
 		line = get_next_line(fd);
-
-		printf("line: %s\n", line);
-
 		if (!line)
 			break ;
 		if (ft_strlen(line) == 0 || ft_strspn(line, " \t\n") == ft_strlen(line))
@@ -142,20 +107,17 @@ bool	check_line(const char *file_name)
 			free(line);
 			continue ;
 		}
-		// Format the line and store in the 3D array
-        char *formatted_line = format_line(line);
-
-		printf("formatted_line: %s\n", formatted_line);
-
-        tmp_line = ft_split_line(formatted_line, tmp_line, &line_idx, word_count);
-        free(formatted_line);
-        free(line);
+		formatted_line = format_line(line);
+		if (!parser(mrt, formatted_line))
+		{
+			free(formatted_line);
+			free(line);
+			close(fd);
+			return (false);
+		}
+		free(formatted_line);
+		free(line);
 	}
-	printf("Check type:\n");
 	close(fd);
-	print_3D_array(tmp_line);
 	return (true);
 }
-
-// recheck allocated memory for tmp_line
-

@@ -60,5 +60,9 @@ bool	ft_is_whitespaces(char *s);
 char	*ft_strtok(char *str, const char *delim);
 char	*ft_strcpy(char *dest, char *src);
 size_t	ft_strspn(const char *str, const char *accept);
+void	*ft_realloc(void *ptr, size_t size);
+bool	ft_isspace(char c);
+float	ft_atof(char *str);
+bool	ft_isfloat(char *str);
 
 #endif

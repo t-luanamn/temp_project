@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mrt.h"
+#include "utils.h"
 
 /*
 Check file:
@@ -61,35 +61,43 @@ bool	check_file_type(const char *file_name)
 	return (true);
 }
 
-bool	check_file_content(const char *file_name)
+bool check_file_content(const char *file_name)
 {
 	int		fd;
-	char	buf[1];
+	char	*line;
+	bool	has_non_whitespace;
 
+	has_non_whitespace = false;
 	fd = open(file_name, O_RDONLY);
 	if (fd < 0)
 	{
 		print_error("Error: File not found or cannot be opened");
 		return (false);
 	}
-	if (read(fd, buf, 1) == 0)
+	line = get_next_line(fd);
+	while (line != NULL)
 	{
-		print_error("Error: Empty file");
-		close(fd);
-		return (false);
+		if (ft_strlen(line) != 0 && ft_strspn(line, " \t\n") != ft_strlen(line))
+			has_non_whitespace = true;
+		free(line);
+		line = get_next_line(fd);
 	}
 	close(fd);
+	if (!has_non_whitespace)
+	{
+		print_error("Error: Empty file");
+		return (false);
+	}
 	return (true);
 }
 
-// add check whole file is whitespace
-bool	check_file(const char *file_name)
+bool	check_file(t_mrt *mrt, const char *file_name)
 {
 	if (check_file_type(file_name) == false)
 		return (false);
 	if (check_file_content(file_name) == false)
 		return (false);
-	if (check_line(file_name) == false)
+	if (check_line(mrt, file_name) == false)
 		return (false);
 	return (true);
 }

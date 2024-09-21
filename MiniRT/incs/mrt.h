@@ -23,10 +23,19 @@
 # include "define.h"
 # include "object.h"
 # include "error.h"
+# include "utils.h"
 
 typedef struct s_mrt
 {
-	char	***array3D;
+	t_ambient	ambient;
+	t_camera	camera;
+	t_light		light;
+	t_sphere	*spheres;  // Use dynamic arrays or linked lists to store multiple objects
+	t_plane		*planes;
+	t_cylinder	*cylinders;
+	int			num_spheres;
+	int			num_planes;
+	int			num_cylinders;
 }	t_mrt;
 
 

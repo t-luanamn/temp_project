@@ -15,19 +15,17 @@
 
 # include <stdio.h>
 # include <stdbool.h>
+# include "mrt.h"
 # include "define.h"
 
 
 
-// Check file
-bool	check_file(const char *file_name);
-bool	check_line(const char *file_name);
-
 // Error
 void	print_error(const char *message);
+bool	parsing_error(const char *message, char **data);
+
 
 // Debug
-void	print_3D_array(char ***tmp_line);
 
 
 #endif
