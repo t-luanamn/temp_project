@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "mrt.h"
 
 void	print_array(char **array)
 {

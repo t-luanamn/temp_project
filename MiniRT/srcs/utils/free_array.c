@@ -1,4 +1,4 @@
-#include "error.h"
+#include "mrt.h"
 
 void	free_array(char **arr)
 {

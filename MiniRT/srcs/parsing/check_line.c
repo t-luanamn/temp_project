@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "mrt.h"
 
 /*
 Check type identifier
@@ -72,29 +72,26 @@ Number of parameters: 6
 
 char	*format_line(char *line)
 {
-	char	*token;
+	int		i;
 	char	*formatted_line;
 
-	formatted_line = (char *)malloc(ft_strlen(line) + 1);
-	token = ft_strtok(line, "\t ");
-	while (token != NULL)
+	i = 0;
+	formatted_line = ft_strdup(line);
+	while (formatted_line && formatted_line[i])
 	{
-		ft_strcat(formatted_line, token);
-		ft_strcat(formatted_line, " ");
-		token = ft_strtok(NULL, "\t ");
+		if (formatted_line[i] == '\t' || formatted_line[i] == '\n')
+			formatted_line[i] = ' ';
+		i++;
 	}
-	if (ft_strlen(formatted_line) > 0)
-	{
-		formatted_line[ft_strlen(formatted_line) - 1] = '\0';
-	}
-	return (formatted_line);
+	line = ft_strtrim(formatted_line, " ");
+	free(formatted_line);
+	return (line);
 }
 
 bool check_line(t_mrt *mrt, const char *file_name)
 {
 	int		fd;
 	char	*line;
-	char	*formatted_line;
 
 	fd = open(file_name, O_RDONLY);
 	while (true)
@@ -107,15 +104,13 @@ bool check_line(t_mrt *mrt, const char *file_name)
 			free(line);
 			continue ;
 		}
-		formatted_line = format_line(line);
-		if (!parser(mrt, formatted_line))
+		line = format_line(line);
+		if (!parser(mrt, line))
 		{
-			free(formatted_line);
 			free(line);
 			close(fd);
 			return (false);
 		}
-		free(formatted_line);
 		free(line);
 	}
 	close(fd);

@@ -27,5 +27,6 @@ int	main(int ac, char **av)
 	printf("Parsing file...\n");
 	printf("Ratio: %f\n", mrt->ambient.ratio);
 	printf("Colour: %d %d %d\n", mrt->ambient.colour.r, mrt->ambient.colour.g, mrt->ambient.colour.b);
+	free_mrt(mrt);
 	return (0);
 }

@@ -1,12 +1,9 @@
-#include "utils.h"
+#include "mrt.h"
 
 bool	parser(t_mrt *mrt, char *line)
 {
-	char	**split_line;
-
-	split_line = ft_split(line, ' ');
-	if (ft_strcmp(split_line[0], "A") == 0)
-		return (parse_ambient(mrt, split_line));
+	if (ft_strncmp(line, "A", 1) == 0)
+		return (parse_ambient(mrt, line));
 	// else if (ft_strcmp(split_line[0], "C") == 0)
 	// 	mrt->camera = parse_camera(split_line);
 	// else if (ft_strcmp(split_line[0], "L") == 0)
@@ -19,24 +16,26 @@ bool	parser(t_mrt *mrt, char *line)
 	// 	add_cylinder(mrt, parse_cylinder(split_line));
 	else
 	{
-		print_error("Error: Unknown identifier");
+		print_error("Unknown identifier");
 		print_error(line);
 	}
-	free_array(split_line);
 	return (false);
 }
 
-bool	parse_ambient(t_mrt *mrt, char **data)
+bool	parse_ambient(t_mrt *mrt, char *line)
 {
+	char		**data;
 	t_ambient	amb;
 	int			i;
 
+	data = ft_split(line, ' ');
 	if (count_parameters(data) != PARAMS_AMBIENT)
 	{
+		parsing_error("Invalid number of parameters for ambient light", data);
 		free_array(data);
-		print_error("Error: Invalid number of parameters for ambient light");
 		return (false);
 	}
+	ft_bzero(&amb, sizeof(t_ambient));
 	i = 0;
 	while (data && data[++i])
 	{
@@ -46,6 +45,7 @@ bool	parse_ambient(t_mrt *mrt, char **data)
 			return (parsing_error("Invalid ambient light colour", data));
 	}
 	mrt->ambient = amb;
+	free_array(data);
 	return (true);
 }
 
