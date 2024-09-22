@@ -76,7 +76,7 @@ char	*format_line(char *line)
 	char	*formatted_line;
 
 	i = 0;
-	formatted_line = ft_strdup(line);
+	formatted_line = line;
 	while (formatted_line && formatted_line[i])
 	{
 		if (formatted_line[i] == '\t' || formatted_line[i] == '\n')
@@ -92,9 +92,11 @@ bool check_line(t_mrt *mrt, const char *file_name)
 {
 	int		fd;
 	char	*line;
+	bool	status;
 
+	status = true;
 	fd = open(file_name, O_RDONLY);
-	while (true)
+	while (status == true)
 	{
 		line = get_next_line(fd);
 		if (!line)
@@ -106,13 +108,9 @@ bool check_line(t_mrt *mrt, const char *file_name)
 		}
 		line = format_line(line);
 		if (!parser(mrt, line))
-		{
-			free(line);
-			close(fd);
-			return (false);
-		}
+			status = false;
 		free(line);
 	}
 	close(fd);
-	return (true);
+	return (status);
 }

@@ -82,6 +82,8 @@ bool check_file_content(const char *file_name)
 		free(line);
 		line = get_next_line(fd);
 	}
+	if (line)
+		free(line);
 	close(fd);
 	if (!has_non_whitespace)
 	{
