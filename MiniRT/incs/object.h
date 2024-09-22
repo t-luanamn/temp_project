@@ -72,4 +72,13 @@ typedef struct s_cylinder
 	t_colour	colour;
 }	t_cylinder;
 
+typedef struct s_img
+{
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		endian;
+	int		line_length;
+}	t_img;
+
 #endif

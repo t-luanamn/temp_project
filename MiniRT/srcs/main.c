@@ -38,6 +38,7 @@ int	main(int ac, char **av)
 	if (!check_file(mrt, av[1]))
 		status = EXIT_FAILURE;
 	print_mrt(mrt);
+	mrt_init(mrt);
 	free_mrt(mrt);
 	return (status);
 }

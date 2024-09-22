@@ -27,4 +27,21 @@
 # define PARAMS_SPHERE 4
 # define PARAMS_CYLINDER 6
 
+// Window
+# define WIN_WIDTH 1280
+# define WIN_HEIGHT 720
+
+// Key
+# ifdef __APPLE__
+#  define IS_LINUX 0
+#  define ESC_KEY 53
+#  define LEFT_CLICK 1
+#  define RIGHT_CLICK 2
+# elif defined __unix__
+#  define IS_LINUX 1
+#  define ESC_KEY 65307
+#  define LEFT_CLICK 1
+#  define RIGHT_CLICK 2
+# endif
+
 #endif

@@ -27,6 +27,9 @@
 
 typedef struct s_mrt
 {
+	void		*mlx;
+	void		*mlx_win;
+	t_img		img;
 	t_ambient	ambient;
 	t_camera	camera;
 	t_light		light;
@@ -81,5 +84,15 @@ void	print_light(t_light light);
 void	print_sphere(t_sphere sphere, int i);
 void	print_plane(t_plane plane, int i);
 void	print_cylinder(t_cylinder cylinder, int i);
+
+// Init and clear
+void	mrt_init(t_mrt *mrt);
+void	hook_init(t_mrt *mrt);
+int		key_hook(int keysym, t_mrt *mrt);
+int		close_handler(t_mrt *mrt);
+void	mrt_clear(t_mrt *mrt);
+
+// Render
+void	mrt_render(t_mrt *mrt);
 
 #endif
