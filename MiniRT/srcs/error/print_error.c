@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print_error.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/22 13:39:02 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/09/22 13:39:03 by tluanamn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "mrt.h"
 
 void	print_error(const char *message)
 {
-	printf(RED "Error: %s\n" RST, message);
+	printf(RED"Error: %s\n"RST, message);
 }

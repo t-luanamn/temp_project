@@ -25,11 +25,12 @@ Number of parameters: 3
 Number of parameters: 4
 - identifier: C
 - x,y,z coordinates of the view point: -50.0,0,20
-- 3d normalized orientation vector. In range [-1,1] for each x,y,z axis: 0.0,0.0,1.0
+- 3d normalized orientation vector. In range [-1,1]
+	for each x,y,z axis: 0.0,0.0,1.0
 - FOV : Horizontal field of view in degrees in range [0,180]: 70
 
 # Light: L
-Number of parameters: 3
+Number of parameters: 4
 - identifier: L
 - x,y,z coordinates of the light point: -40.0,50.0,0.0
 - the light brightness ratio in range [0.0,1.0]: 0.6
@@ -55,21 +56,12 @@ Number of parameters: 4
 Number of parameters: 6
 - identifier: cy
 - x,y,z coordinates of the center of the cylinder: 50.0,0.0,20.6
-- 3d normalized vector of axis of cylinder. In range [-1,1] for each x,y,z axis: 0.0,0.0,1.0
+- 3d normalized vector of axis of cylinder. In range [-1,1]
+	for each x,y,z axis: 0.0,0.0,1.0
 - the cylinder diameter: 14.2
 - the cylinder height: 21.42
 - R,G,B colors in range [0,255]: 10, 0, 255
 */
-
-// read the line; extract text seperate by space " " or tab "\t" and store it in temp_line[][][]
-// File can have multiple empty lines it should be ignored
-/*
-	temp_line structure: temp_line[i][j][k]
-	temp_line[i] stores the line number i
-	temp_line[i][j] stores the word number j of line i
-	temp_line[i][j][k] stores the character number k of word j of line i
-*/
-
 char	*format_line(char *line)
 {
 	int		i;
@@ -88,7 +80,7 @@ char	*format_line(char *line)
 	return (line);
 }
 
-bool check_line(t_mrt *mrt, const char *file_name)
+bool	check_line(t_mrt *mrt, const char *file_name)
 {
 	int		fd;
 	char	*line;

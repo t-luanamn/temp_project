@@ -1,39 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isfloat.c                                       :+:      :+:    :+:   */
+/*   parse_numbers.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/22 13:34:53 by tluanamn          #+#    #+#             */
-/*   Updated: 2024/09/22 13:34:54 by tluanamn         ###   ########.fr       */
+/*   Created: 2024/09/22 14:32:15 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/09/22 14:32:17 by tluanamn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "mrt.h"
 
-bool	ft_isfloat(char *str)
+bool	parse_float(char *input, float *value, float min, float max)
 {
-	bool	has_decimal;
-	int		i;
+	float	num;
 
-	has_decimal = false;
-	i = 0;
-	if (!str || *str == '\0')
+	if (!ft_isfloat(input))
 		return (false);
-	if (str[i] == '-' || str[i] == '+')
-		i++;
-	while (str[i])
-	{
-		if (str[i] == '.')
-		{
-			if (has_decimal)
-				return (false);
-			has_decimal = true;
-		}
-		else if (!ft_isdigit(str[i]))
-			return (false);
-		i++;
-	}
+	num = ft_atof(input);
+	if (num < min || num > max)
+		return (false);
+	*value = num;
+	return (true);
+}
+
+bool	parse_int(char *input, int *value, int min, int max)
+{
+	int	num;
+
+	if (!ft_isnumber(input))
+		return (false);
+	num = ft_atoi(input);
+	if (num < min || num > max)
+		return (false);
+	*value = num;
 	return (true);
 }

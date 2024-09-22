@@ -1,47 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_values.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/22 13:39:26 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/09/22 13:39:31 by tluanamn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "mrt.h"
 
-bool	parse_vector(char *input, t_vector *vector)
+static bool	validate_vector(char **components, bool range_check)
 {
-	char	**components;
 	int		i;
+	float	num;
 
-	components = NULL;
 	i = 0;
-	components = ft_split(input, ',');
-	if (!components)
-		return (false);
-	for (i = 0; i < 3; i++)
+	while (i < 3)
 	{
-		if (!components[i])
-		{
-			free_array(components);
+		if (!ft_isfloat(components[i]))
 			return (false);
-		}
+		num = ft_atof(components[i]);
+		if (range_check && (num < -1.0 || num > 1.0))
+			return (false);
+		i++;
 	}
-	vector->x = ft_atof(components[0]);
-	vector->y = ft_atof(components[1]);
-	vector->z = ft_atof(components[2]);
-	free_array(components);
 	return (true);
 }
 
-int	is_number(char *str)
+bool	parse_vector(char *input, t_vector *vector, bool range_check)
 {
-	int	i;
+	char	**components;
+	bool	return_value;
 
-	if (str == NULL || str[0] == '\0')
-		return (0);
-	i = 0;
-	while (str[i])
+	return_value = true;
+	components = ft_split(input, ',');
+	if (!components || count_parameters(components) != 3)
+		return_value = false;
+	if (!validate_vector(components, range_check))
+		return_value = false;
+	else
 	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		i++;
+		vector->x = ft_atof(components[0]);
+		vector->y = ft_atof(components[1]);
+		vector->z = ft_atof(components[2]);
 	}
-	return (1);
+	free_array(components);
+	return (return_value);
 }
 
-bool	validate_colour(char **components)
+static bool	validate_colour(char **components)
 {
 	int	i;
 	int	num;
@@ -49,7 +59,7 @@ bool	validate_colour(char **components)
 	i = 0;
 	while (i < 3)
 	{
-		if (!is_number(components[i]))
+		if (!ft_isnumber(components[i]))
 			return (false);
 		num = ft_atoi(components[i]);
 		if (num < 0 || num > 255)
@@ -78,17 +88,4 @@ bool	parse_colour(char *input, t_colour *colour)
 	}
 	free_array(components);
 	return (return_value);
-}
-
-bool	parse_float(char *input, float *value, float min, float max)
-{
-	float	num;
-
-	if (!ft_isfloat(input))
-		return (false);
-	num = ft_atof(input);
-	if (num < min || num > max)
-		return (false);
-	*value = num;
-	return (true);
 }

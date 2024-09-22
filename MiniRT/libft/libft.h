@@ -64,5 +64,6 @@ void	*ft_realloc(void *ptr, size_t size);
 bool	ft_isspace(char c);
 float	ft_atof(char *str);
 bool	ft_isfloat(char *str);
+int		ft_isnumber(char *str);
 
 #endif

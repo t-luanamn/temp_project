@@ -1,28 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_mrt.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/22 13:40:34 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/09/22 13:40:36 by tluanamn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "mrt.h"
 
 void	free_mrt(t_mrt *mrt)
 {
-	// Free spheres
 	if (mrt->spheres)
 	{
 		free(mrt->spheres);
 		mrt->spheres = NULL;
 	}
-
-	// Free planes
 	if (mrt->planes)
 	{
 		free(mrt->planes);
 		mrt->planes = NULL;
 	}
-
-	// Free cylinders
 	if (mrt->cylinders)
 	{
 		free(mrt->cylinders);
 		mrt->cylinders = NULL;
 	}
-
-	// Free the main mrt structure
 	free(mrt);
 }
