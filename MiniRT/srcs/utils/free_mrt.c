@@ -29,5 +29,6 @@ void	free_mrt(t_mrt *mrt)
 		free(mrt->cylinders);
 		mrt->cylinders = NULL;
 	}
-	free(mrt);
+	if (mrt)
+		free(mrt);
 }
