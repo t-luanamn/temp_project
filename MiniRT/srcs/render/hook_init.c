@@ -2,34 +2,33 @@
 
 int	close_handler(t_mrt *mrt)
 {
-	mlx_destroy_image(mrt->mlx,
-		mrt->img.addr);
-	mlx_clear_window(mrt->mlx,
-		mrt->mlx_win);
-	mlx_destroy_window(mrt->mlx,
-		mrt->mlx_win);
-	mrt_clear(mrt);
+	printf("Close handler...\n");
+	if (mrt->img.img)
+		mlx_destroy_image(mrt->mlx, mrt->img.img);
+	if (mrt->mlx_win)
+	{
+		mlx_clear_window(mrt->mlx, mrt->mlx_win);
+		mlx_destroy_window(mrt->mlx, mrt->mlx_win);
+	}
+	if (mrt->mlx)
+		free(mrt->mlx);
+	free_mrt(mrt);
 	exit(EXIT_SUCCESS);
 }
 
 int	key_hook(int keysym, t_mrt *mrt)
 {
+	printf("Key hook...\n");
 	if (keysym == ESC_KEY)
 		close_handler(mrt);
 	mrt_render(mrt);
 	return (0);
 }
 
-static int	handle_no_event(t_mrt *mrt)
-{
-	(void) mrt;
-	return (0);
-}
 
 void	hook_init(t_mrt *mrt)
 {
-	mlx_loop_hook(mrt->mlx, handle_no_event, mrt);
+	printf("Hook init...\n");
 	mlx_hook(mrt->mlx_win, 2, 0, key_hook, mrt);
 	mlx_hook(mrt->mlx_win, 17, 0, close_handler, mrt);
-	mlx_loop(mrt->mlx);
 }

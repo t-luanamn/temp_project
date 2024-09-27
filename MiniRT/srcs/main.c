@@ -25,20 +25,24 @@ void	mrt_obj_num_init(t_mrt *mrt)
 int	main(int ac, char **av)
 {
 	t_mrt	*mrt;
-	int		status;
 
-	status = EXIT_SUCCESS;
 	mrt = (t_mrt *)malloc(sizeof(t_mrt));
 	mrt_obj_num_init(mrt);
 	if (ac != 2)
 	{
 		print_error("Error: ac number\nTry: ./miniRT *.rt\n");
-		status = EXIT_FAILURE;
+		free_mrt(mrt);
+		return (EXIT_FAILURE);
 	}
 	if (!check_file(mrt, av[1]))
-		status = EXIT_FAILURE;
+	{
+		free_mrt(mrt);
+		return (EXIT_FAILURE);
+	}
 	print_mrt(mrt);
 	mrt_init(mrt);
-	free_mrt(mrt);
-	return (status);
+	mrt_render(mrt);
+	printf("Looping...(main)\n");
+	mlx_loop(mrt->mlx);
+	return (EXIT_SUCCESS);
 }
