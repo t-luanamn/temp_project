@@ -11,7 +11,11 @@ int	close_handler(t_mrt *mrt)
 		mlx_destroy_window(mrt->mlx, mrt->mlx_win);
 	}
 	if (mrt->mlx)
+	{
+		printf("Freeing mlx...\n");
 		free(mrt->mlx);
+		mrt->mlx = NULL;
+	}
 	free_mrt(mrt);
 	exit(EXIT_SUCCESS);
 }
@@ -21,7 +25,6 @@ int	key_hook(int keysym, t_mrt *mrt)
 	printf("Key hook...\n");
 	if (keysym == ESC_KEY)
 		close_handler(mrt);
-	mrt_render(mrt);
 	return (0);
 }
 
@@ -29,6 +32,6 @@ int	key_hook(int keysym, t_mrt *mrt)
 void	hook_init(t_mrt *mrt)
 {
 	printf("Hook init...\n");
-	mlx_hook(mrt->mlx_win, 2, 0, key_hook, mrt);
-	mlx_hook(mrt->mlx_win, 17, 0, close_handler, mrt);
+	mlx_key_hook(mrt->mlx_win, key_hook, mrt);
+	mlx_hook(mrt->mlx_win, 17, 1L<<17, close_handler, mrt);
 }

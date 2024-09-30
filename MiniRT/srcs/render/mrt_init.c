@@ -16,6 +16,7 @@ void	mrt_clear(t_mrt *mrt)
 void	mrt_init(t_mrt *mrt)
 {
 	printf("Initialising...\n");
+
 	mrt->mlx = mlx_init();
 	if (!mrt->mlx)
 		mrt_clear(mrt);
