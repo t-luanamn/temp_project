@@ -20,29 +20,27 @@ void	mrt_obj_num_init(t_mrt *mrt)
 	mrt->num_spheres = 0;
 	mrt->num_planes = 0;
 	mrt->num_cylinders = 0;
+	mrt->spheres = NULL;
+	mrt->planes = NULL;
+	mrt->cylinders = NULL;
 }
 
 int	main(int ac, char **av)
 {
-	t_mrt	*mrt;
+	t_mrt	mrt;
 
-	mrt = (t_mrt *)malloc(sizeof(t_mrt));
-	mrt_obj_num_init(mrt);
 	if (ac != 2)
-	{
-		print_error("Error: ac number\nTry: ./miniRT *.rt\n");
-		free_mrt(mrt);
-		return (EXIT_FAILURE);
-	}
-	if (!check_file(mrt, av[1]))
-	{
-		free_mrt(mrt);
-		return (EXIT_FAILURE);
-	}
-	print_mrt(mrt);
-	mrt_init(mrt);
-	mrt_render(mrt);
+		return (print_error("Error: Try: ./miniRT *.rt\n"), EXIT_FAILURE);
+	mrt_obj_num_init(&mrt);
+	if (!check_file(&mrt, av[1]))
+		return (free_mrt(&mrt), EXIT_FAILURE);
+	print_mrt(&mrt);
+	mrt_init(&mrt);
+	mrt_render(&mrt);
+	free_mrt(&mrt);
+	mlx_key_hook(mrt.mlx_win, key_hook, &mrt);
+	mlx_hook(mrt.mlx_win, 17, 1L<<17, close_handler, &mrt);
 	printf("Looping...(main)\n");
-	mlx_loop(mrt->mlx);
+	mlx_loop(&mrt.mlx);
 	return (EXIT_SUCCESS);
 }

@@ -1,6 +1,6 @@
 NAME			= miniRT
 CC				= gcc
-CFLAGS			= -Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS			= -Wall -Wextra -Werror -g #-fsanitize=address
 
 SRCS			= $(shell find ./srcs -name '*.c')
 SRCS_INC		= ./incs
@@ -10,10 +10,10 @@ OBJS			= $(SRCS:.c=.o)
 LIBFT			= ./libft
 LIBFT_L			= -L $(LIBFT) -lft
 ifeq ($(shell uname), Linux)
-	LIBMLX		= ./minilibx_linux
-	LIBMLX_L	= -L $(LIBMLX) -lmlx -lXext -lX11 -lm -lz
+	LIBMLX		= ./mlx/minilibx_linux
+	LIBMLX_L	= -L $(LIBMLX) -lmlx -lXext -lX11 -lm
 else
-	LIBMLX		= ./minilibx_opengl
+	LIBMLX		= ./mlx/minilibx_opengl
 	LIBMLX_L	= -L $(LIBMLX) -lmlx -framework OpenGL -framework AppKit
 endif
 

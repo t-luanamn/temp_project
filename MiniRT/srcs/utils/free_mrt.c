@@ -14,21 +14,23 @@
 
 void	free_mrt(t_mrt *mrt)
 {
+	printf("Freeing obj...\n");
 	if (mrt->spheres)
 	{
+		printf("Freeing spheres...\n");
 		free(mrt->spheres);
 		mrt->spheres = NULL;
 	}
 	if (mrt->planes)
 	{
+		printf("Freeing planes...\n");
 		free(mrt->planes);
 		mrt->planes = NULL;
 	}
 	if (mrt->cylinders)
 	{
+		printf("Freeing cylinders...\n");
 		free(mrt->cylinders);
 		mrt->cylinders = NULL;
 	}
-	if (mrt)
-		free(mrt);
 }
