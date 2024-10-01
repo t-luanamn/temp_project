@@ -23,11 +23,7 @@ bool	mrt_init(t_window *mlx)
 	mlx->win = mlx_new_window(mlx->ptr, W_WIDTH, W_HEIGHT, "MiniRT");
 	if (!mlx->win)
 		return (print_error("mlx_new_window() failed"), destroy_mlx(mlx));
-
-	printf("Image address before new image: %p\n", mlx->img.img);
 	mlx->img.img = mlx_new_image(mlx->ptr, W_WIDTH, W_HEIGHT);
-	printf("Image address: %p\n", mlx->img.img);
-	
 	if (!mlx->img.img)
 		return (print_error("mlx_new_image() failed"), destroy_mlx(mlx));
 	mlx->img.addr = mlx_get_data_addr(mlx->img.img, &mlx->img.bits_per_pixel,
