@@ -16,6 +16,8 @@ void    *mlx_new_image(mlx_ptr_t *mlx_ptr, int width, int height)
 {
   mlx_img_list_t        *newimg;
 
+  printf("new image: %p, W: %d, H: %d\n", width, height);
+
   //  if (mlx_ptr->win_list == NULL)
   //    return (NULL);  // need at leat one window created to have openGL context and create texture
   if ((newimg = malloc(sizeof(*newimg))) == NULL)
@@ -30,6 +32,8 @@ void    *mlx_new_image(mlx_ptr_t *mlx_ptr, int width, int height)
   newimg->vertexes[6] = 0.0;  newimg->vertexes[7] = -height;
   newimg->buffer = malloc(UNIQ_BPP*width*height);
   bzero(newimg->buffer, UNIQ_BPP*width*height);
+
+  printf("new image done.\n");
 
   return (newimg);
 }
@@ -77,6 +81,7 @@ void    mlx_put_image_to_window(mlx_ptr_t *mlx_ptr, mlx_win_list_t *win_ptr, mlx
 {
   mlx_img_ctx_t	*imgctx;
 
+  printf("put image to window %d %d\n", x, y);
   if (!win_ptr->pixmgt)
     return ;
 
@@ -156,6 +161,9 @@ int     mlx_destroy_image(mlx_ptr_t *mlx_ptr, mlx_img_list_t *img_todel)
   mlx_img_list_t *img;
   mlx_win_list_t *win;
 
+  printf("destroy image\n");
+  printf("ptr: %p, image: %p\n", mlx_ptr, img_todel);
+
   img_first.next = mlx_ptr->img_list;
   img = &img_first;
   while (img && img->next)
@@ -193,6 +201,6 @@ int     mlx_destroy_image(mlx_ptr_t *mlx_ptr, mlx_img_list_t *img_todel)
   free(img_todel->buffer);
   free(img_todel);
 
-  //  printf("destroy image done.\n");
+  printf("destroy image done.\n");
   return (0);
 }
