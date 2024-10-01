@@ -28,8 +28,8 @@
 # define PARAMS_CYLINDER 6
 
 // Window
-# define WIN_WIDTH 1280
-# define WIN_HEIGHT 720
+# define W_WIDTH 1280
+# define W_HEIGHT 720
 
 // Key
 # ifdef __APPLE__

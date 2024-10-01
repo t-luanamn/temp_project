@@ -1,39 +1,32 @@
 #include "mrt.h"
 
-void	mrt_clear(t_mrt *mrt)
+int	destroy_mlx(t_window *mlx)
 {
-	printf("Clearing...\n");
-	if (mrt->mlx_win)
-		mlx_destroy_window(mrt->mlx, mrt->mlx_win);
-	if (mrt->img.img)
-		mlx_destroy_image(mrt->mlx, mrt->img.img);
-	if (mrt->mlx)
-	{
-		printf("Freeing mlx...\n");
-		free(mrt->mlx);
-	}
-	if (mrt->mlx_win)
-	{
-		printf("Freeing mlx_win...\n");
-		free(mrt->mlx_win);
-	}
-	free_mrt(mrt);
-	exit(EXIT_SUCCESS);
+	if (mlx->win)
+		mlx_destroy_window(mlx->ptr, mlx->win);
+	if (mlx->img.img)
+		mlx_destroy_image(mlx->ptr, mlx->img.img);
+	if (mlx->ptr)
+		free(mlx->ptr);
+	return (0);
 }
 
-void	mrt_init(t_mrt *mrt)
+bool	mrt_init(t_window *mlx)
 {
 	printf("Initialising...\n");
-
-	mrt->mlx = NULL;
-	mrt->mlx_win = NULL;
-	mrt->mlx = mlx_init();
-	if (!mrt->mlx)
-		mrt_clear(mrt);
-	mrt->mlx_win = mlx_new_window(mrt->mlx, WIN_WIDTH, WIN_HEIGHT, "MiniRT");
-	mrt->img.img = mlx_new_image(mrt->mlx, WIN_WIDTH, WIN_HEIGHT);
-	if (!mrt->img.img)
-		mrt_clear(mrt);
-	mrt->img.addr = mlx_get_data_addr(mrt->img.img, &mrt->img.bits_per_pixel,
-			&mrt->img.line_length, &mrt->img.endian);
+	mlx->ptr = NULL;
+	mlx->win = NULL;
+	mlx->img.img = NULL;
+	mlx->ptr = mlx_init();
+	if (!mlx->ptr)
+		return (print_error("mlx_init() failed"), false);
+	mlx->img.img = mlx_new_image(mlx->ptr, W_WIDTH, W_HEIGHT);
+	if (!mlx->img.img)
+		return (print_error("mlx_new_image() failed"), destroy_mlx(mlx));
+	mlx->img.addr = mlx_get_data_addr(mlx->img.img, &mlx->img.bits_per_pixel,
+						&mlx->img.line_length, &mlx->img.endian);
+	mlx->win = mlx_new_window(mlx->ptr, W_WIDTH, W_HEIGHT, "MiniRT");
+	if (!mlx->win)
+		return (print_error("mlx_new_window() failed"), destroy_mlx(mlx));
+	return (true);
 }

@@ -25,11 +25,16 @@
 # include "define.h"
 # include "object.h"
 
+typedef struct s_window
+{
+	void	*ptr;
+	void	*win;
+	t_img	img;
+}	t_window;
+
 typedef struct s_mrt
 {
-	void		*mlx;
-	void		*mlx_win;
-	t_img		img;
+	t_window	mlx;
 	t_ambient	ambient;
 	t_camera	camera;
 	t_light		light;
@@ -86,11 +91,11 @@ void	print_plane(t_plane plane, int i);
 void	print_cylinder(t_cylinder cylinder, int i);
 
 // Init and clear
-void	mrt_init(t_mrt *mrt);
-void	hook_init(t_mrt *mrt);
-int		key_hook(int keysym, t_mrt *mrt);
+bool	mrt_init(t_window *mlx);
+void	mrt_loop(t_mrt *mrt);
+void	free_obj(t_mrt *mrt);
 int		close_handler(t_mrt *mrt);
-void	mrt_clear(t_mrt *mrt);
+
 
 // Render
 void	mrt_render(t_mrt *mrt);
