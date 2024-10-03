@@ -66,6 +66,7 @@ bool	parse_camera(t_mrt *mrt, char *line)
 	return (true);
 }
 
+// Neet to handle when light colour is unused -> set default colour WHITE
 bool	parse_light(t_mrt *mrt, char *line)
 {
 	char	**data;
@@ -75,7 +76,7 @@ bool	parse_light(t_mrt *mrt, char *line)
 	if (mrt->num_lights > 0)
 		return (print_error("Only one light is allowed"), false);
 	data = ft_split(line, ' ');
-	if (count_parameters(data) != PARAMS_LIGHT)
+	if (count_parameters(data) != PARAMS_LIGHT) // Check when light colour is unused
 		return (parsing_error("Invalid number of parameters", data), false);
 	ft_bzero(&light, sizeof(t_light));
 	i = 0;

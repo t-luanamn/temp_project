@@ -29,6 +29,15 @@ typedef struct s_vector
 	float	z;
 }	t_vector;
 
+typedef struct s_img
+{
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		endian;
+	int		line_length;
+}	t_img;
+
 typedef struct s_ambient
 {
 	float		ratio;
@@ -42,11 +51,12 @@ typedef struct s_camera
 	int			fov;
 }	t_camera;
 
+// Colour is unused in mandatory part
 typedef struct s_light
 {
 	t_vector	position;
 	float		brightness;
-	t_colour	colour; // unused in mandatory part
+	t_colour	colour;
 }	t_light;
 
 typedef struct s_sphere
@@ -72,13 +82,10 @@ typedef struct s_cylinder
 	t_colour	colour;
 }	t_cylinder;
 
-typedef struct s_img
+typedef struct s_ray
 {
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		endian;
-	int		line_length;
-}	t_img;
+	t_vector	origin;
+	t_vector	direction;
+}	t_ray;
 
 #endif

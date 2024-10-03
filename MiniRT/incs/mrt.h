@@ -79,6 +79,15 @@ void	free_mrt(t_mrt *mrt);
 int		count_parameters(char **array);
 void	print_array(char **array);
 
+// Vector operations
+t_vector	vector_add(t_vector v1, t_vector v2);
+t_vector	vector_subtract(t_vector v1, t_vector v2);
+t_vector	vector_scale(t_vector v, float scalar);
+float		vector_dot_product(t_vector v1, t_vector v2);
+// t_vector	vector_cross_product(t_vector v1, t_vector v2);
+float		vector_length(t_vector v);
+t_vector	vector_normalise(t_vector v);
+
 // Print values
 void	print_mrt(t_mrt *mrt);
 void	print_colour(t_colour colour);
