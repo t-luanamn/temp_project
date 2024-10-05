@@ -20,11 +20,7 @@ void	mrt_obj_num_init(t_mrt *mrt)
 	mrt->num_spheres = 0;
 	mrt->num_planes = 0;
 	mrt->num_cylinders = 0;
-	// mrt->spheres = NULL;
-	// mrt->planes = NULL;
-	// mrt->cylinders = NULL;
 }
-
 
 int	main(int ac, char **av)
 {

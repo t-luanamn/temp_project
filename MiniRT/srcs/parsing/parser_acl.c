@@ -66,29 +66,39 @@ bool	parse_camera(t_mrt *mrt, char *line)
 	return (true);
 }
 
-// Neet to handle when light colour is unused -> set default colour WHITE
+bool	parse_light_parameters(char **data, t_light *light)
+{
+	int	i;
+
+	i = 0;
+	while (data && data[++i])
+	{
+		if (i == 1 && !parse_vector(data[i], &light->position, false))
+			return (parsing_error("Invalid light position", data));
+		if (i == 2 && !parse_float(data[i], &light->brightness, 0.0, 1.0))
+			return (parsing_error("Invalid light brightness ratio", data));
+		if (i == 3 && !parse_colour(data[i], &light->colour))
+			return (parsing_error("Invalid light colour", data));
+	}
+	return (true);
+}
+
 bool	parse_light(t_mrt *mrt, char *line)
 {
 	char	**data;
 	t_light	light;
-	int		i;
 
 	if (mrt->num_lights > 0)
 		return (print_error("Only one light is allowed"), false);
 	data = ft_split(line, ' ');
-	if (count_parameters(data) != PARAMS_LIGHT) // Check when light colour is unused
+	if (count_parameters(data) < PARAMS_LIGHT - 1
+		|| count_parameters(data) > PARAMS_LIGHT)
 		return (parsing_error("Invalid number of parameters", data), false);
 	ft_bzero(&light, sizeof(t_light));
-	i = 0;
-	while (data && data[++i])
-	{
-		if (i == 1 && !parse_vector(data[i], &light.position, false))
-			return (parsing_error("Invalid light position", data));
-		if (i == 2 && !parse_float(data[i], &light.brightness, 0.0, 1.0))
-			return (parsing_error("Invalid light brightness ratio", data));
-		if (i == 3 && !parse_colour(data[i], &light.colour))
-			return (parsing_error("Invalid light colour", data));
-	}
+	if (!parse_light_parameters(data, &light))
+		return (false);
+	if (count_parameters(data) < PARAMS_LIGHT)
+		light.colour = (t_colour){255, 255, 255};
 	mrt->light = light;
 	mrt->num_lights += 1;
 	free_array(data);

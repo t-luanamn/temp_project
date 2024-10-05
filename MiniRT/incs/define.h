@@ -27,22 +27,16 @@
 # define PARAMS_SPHERE 4
 # define PARAMS_CYLINDER 6
 
+# define FLT_MAX 3.402823466e+38F
+
 // Window
 # define W_WIDTH 1280
 # define W_HEIGHT 720
 
-// Key
-# ifdef __APPLE__
-#  define IS_LINUX 0
-#  define ESC_KEY 53
-#  define LEFT_CLICK 1
-#  define RIGHT_CLICK 2
-# elif defined __unix__
-#  define IS_LINUX 1
-#  define ESC_KEY 65307
-#  define LEFT_CLICK 1
-#  define RIGHT_CLICK 2
-# endif
+// Key Apple
+# define ESC_KEY 53
+// Key Linux
+// # define ESC_KEY 65307
 
 /*
 math.h constants

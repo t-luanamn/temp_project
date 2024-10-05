@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vec_op.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/05 14:58:43 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/10/05 14:58:45 by tluanamn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "mrt.h"
 
 // https://www.geeksforgeeks.org/vector-operations/
@@ -40,28 +52,12 @@ float	vector_dot_product(t_vector v1, t_vector v2)
 	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
 }
 
-// Function to calculate the cross product of two vectors
-// t_vector	vector_cross_product(t_vector v1, t_vector v2)
-// {
-// 	t_vector	result;
-
-// 	result.x = v1.y * v2.z - v1.z * v2.y;
-// 	result.y = v1.z * v2.x - v1.x * v2.z;
-// 	result.z = v1.x * v2.y - v1.y * v2.x;
-// 	return (result);
-// }
-
-float	vector_length(t_vector v)
-{
-	return (sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
-}
-
 t_vector	vector_normalise(t_vector v)
 {
 	float		length;
 	t_vector	normalised_vector;
 
-	length = vector_length(v);
+	length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 	normalised_vector.x = v.x / length;
 	normalised_vector.y = v.y / length;
 	normalised_vector.z = v.z / length;

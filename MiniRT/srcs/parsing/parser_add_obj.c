@@ -14,7 +14,6 @@
 
 bool	add_sphere(t_mrt *mrt, t_sphere sphere)
 {
-	printf("Adding sphere...\n");
 	t_sphere	*sp;
 
 	sp = ft_realloc(mrt->spheres, sizeof(t_sphere) * (mrt->num_spheres + 1));
@@ -28,7 +27,6 @@ bool	add_sphere(t_mrt *mrt, t_sphere sphere)
 
 bool	add_plane(t_mrt *mrt, t_plane plane)
 {
-	printf("Adding plane...\n");
 	t_plane	*pl;
 
 	pl = ft_realloc(mrt->planes, sizeof(t_plane) * (mrt->num_planes + 1));
@@ -42,7 +40,6 @@ bool	add_plane(t_mrt *mrt, t_plane plane)
 
 bool	add_cylinder(t_mrt *mrt, t_cylinder cylinder)
 {
-	printf("Adding cylinder...\n");
 	t_cylinder	*cy;
 
 	cy = ft_realloc(mrt->cylinders,

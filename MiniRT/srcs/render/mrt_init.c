@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mrt_init.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/05 14:57:37 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/10/05 14:57:39 by tluanamn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "mrt.h"
 
 int	destroy_mlx(t_window *mlx)
@@ -27,6 +39,6 @@ bool	mrt_init(t_window *mlx)
 	if (!mlx->img.img)
 		return (print_error("mlx_new_image() failed"), destroy_mlx(mlx));
 	mlx->img.addr = mlx_get_data_addr(mlx->img.img, &mlx->img.bits_per_pixel,
-						&mlx->img.line_length, &mlx->img.endian);
+			&mlx->img.line_length, &mlx->img.endian);
 	return (true);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mrt_loop.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/05 14:57:47 by tluanamn          #+#    #+#             */
+/*   Updated: 2024/10/05 14:57:48 by tluanamn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "mrt.h"
 
 void	free_obj(t_mrt *mrt)
@@ -34,7 +46,6 @@ int	close_handler(t_mrt *mrt)
 	printf("Freeing mrt...\n");
 	free_obj(mrt);
 	free(mrt->mlx.ptr);
-
 	exit(EXIT_SUCCESS);
 }
 

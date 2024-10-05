@@ -88,4 +88,13 @@ typedef struct s_ray
 	t_vector	direction;
 }	t_ray;
 
+typedef struct s_hit
+{
+	float		closest_t;
+	t_sphere	*closest_sphere;
+	t_plane		*closest_plane;
+	t_cylinder	*closest_cylinder;
+	t_vector	hit_point;
+}	t_hit;
+
 #endif
