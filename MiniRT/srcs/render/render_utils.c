@@ -36,35 +36,16 @@ t_vector	calculate_normal_plane(t_plane *plane)
 	return (result);
 }
 
-// t_vector	calculate_normal_cylinder(t_vector hit_point, t_cylinder *cylinder)
-// {
-// 	t_vector	axis;
-// 	t_vector	base_to_hit;
-// 	t_vector	hit_base_proj;
-// 	t_vector	result;
-
-// 	axis = vector_normalise(cylinder->axis);
-// 	base_to_hit = vector_subtract(hit_point, cylinder->position);
-// 	hit_base_proj = vector_scale(axis, vector_dot_product(base_to_hit, axis));
-// 	result = vector_normalise(vector_subtract(hit_point,
-// 				vector_add(cylinder->position, hit_base_proj)));
-// 	return (result);
-// }
 t_vector	calculate_normal_cylinder(t_vector hit_point, t_cylinder *cylinder)
 {
 	t_vector	to_hit;
 	t_vector	axis_normal;
 	t_vector	normal;
 
-	// Vector from cylinder base to hit point
 	to_hit = vector_subtract(hit_point, cylinder->position);
-
-	// Project to_hit vector onto the cylinder axis to get the normal on the side surface
-	axis_normal = vector_scale(cylinder->axis, vector_dot_product(to_hit, cylinder->axis));
-
-	// Subtract axis_normal from to_hit to get the correct surface normal
+	axis_normal = vector_scale(cylinder->axis, vector_dot_product(to_hit,
+				cylinder->axis));
 	normal = vector_subtract(to_hit, axis_normal);
-
 	return (vector_normalise(normal));
 }
 

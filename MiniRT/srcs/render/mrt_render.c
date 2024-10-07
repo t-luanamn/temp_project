@@ -44,7 +44,7 @@ void	render_pixel(t_mrt *mrt, int x, int y, float aspect_ratio)
 
 	fov_scale = tan(mrt->camera.fov * 0.5 * M_PI / 180.0);
 	u = (float)x / (float)W_WIDTH;
-	v = (float)y / (float)W_HEIGHT;
+	v = (float)(W_HEIGHT - y) / (float)W_HEIGHT;
 	ray.origin = mrt->camera.view_point;
 	ray.direction = vector_normalise((t_vector){
 			(u - 0.5) * aspect_ratio * fov_scale,
