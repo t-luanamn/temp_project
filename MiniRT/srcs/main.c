@@ -12,16 +12,6 @@
 
 #include "mrt.h"
 
-void	mrt_obj_num_init(t_mrt *mrt)
-{
-	mrt->num_ambient = 0;
-	mrt->num_camera = 0;
-	mrt->num_lights = 0;
-	mrt->num_spheres = 0;
-	mrt->num_planes = 0;
-	mrt->num_cylinders = 0;
-}
-
 int	main(int ac, char **av)
 {
 	t_mrt	mrt;

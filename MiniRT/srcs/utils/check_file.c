@@ -69,6 +69,7 @@ bool	check_file_content(const char *file_name)
 
 bool	check_file(t_mrt *mrt, const char *file_name)
 {
+	printf("Checking file...\n");
 	if (check_file_type(file_name) == false)
 		return (false);
 	if (check_file_content(file_name) == false)

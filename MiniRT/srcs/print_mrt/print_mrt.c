@@ -26,7 +26,7 @@ void	print_mrt(t_mrt *mrt)
 {
 	int	i;
 
-	printf(CYAN"\n=== MRT Content ===\n\n"RST);
+	printf(CYAN"\n=================== MRT Content ===================\n\n"RST);
 	print_ambient(mrt->ambient);
 	print_camera(mrt->camera);
 	print_light(mrt->light);
@@ -48,4 +48,5 @@ void	print_mrt(t_mrt *mrt)
 		print_cylinder(mrt->cylinders[i], i);
 		i++;
 	}
+	printf(CYAN"\n===================================================\n\n"RST);
 }

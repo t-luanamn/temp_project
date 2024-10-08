@@ -12,29 +12,9 @@
 
 #include "mrt.h"
 
-void	free_obj(t_mrt *mrt)
-{
-	printf("Freeing objects...\n");
-	if (mrt->spheres)
-	{
-		free(mrt->spheres);
-		mrt->spheres = NULL;
-	}
-	if (mrt->planes)
-	{
-		free(mrt->planes);
-		mrt->planes = NULL;
-	}
-	if (mrt->cylinders)
-	{
-		free(mrt->cylinders);
-		mrt->cylinders = NULL;
-	}
-}
-
 int	close_handler(t_mrt *mrt)
 {
-	printf("Close handler...\n");
+	printf("Closing...\n");
 	printf("Destroying mlx...\n");
 	if (mrt->mlx.img.img)
 		mlx_destroy_image(mrt->mlx.ptr, mrt->mlx.img.img);
@@ -46,6 +26,7 @@ int	close_handler(t_mrt *mrt)
 	printf("Freeing mrt...\n");
 	free_obj(mrt);
 	free(mrt->mlx.ptr);
+	printf("Cleaned...\n");
 	exit(EXIT_SUCCESS);
 }
 
@@ -61,6 +42,6 @@ void	mrt_loop(t_mrt *mrt)
 {
 	mlx_key_hook(mrt->mlx.win, key_hook, mrt);
 	mlx_hook(mrt->mlx.win, 17, 0, close_handler, mrt);
-	printf("Looping...(main)\n");
+	printf("Looping...\n");
 	mlx_loop(mrt->mlx.ptr);
 }
