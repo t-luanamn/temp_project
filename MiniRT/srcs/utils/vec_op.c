@@ -13,7 +13,12 @@
 #include "mrt.h"
 
 // https://www.geeksforgeeks.org/vector-operations/
-// Function to add two vectors
+/*
+Function to add two vectors
+Calculating Positions: Finding the resultant position
+when moving from one point to another.
+Computer Graphics: Calculating the position of objects in a scene.
+*/
 t_vector	vector_add(t_vector v1, t_vector v2)
 {
 	t_vector	result;
@@ -24,7 +29,12 @@ t_vector	vector_add(t_vector v1, t_vector v2)
 	return (result);
 }
 
-// Function to subtract two vectors
+/*
+Function operation that subtracts one vector from another
+Calculating Displacement: Finding the displacement vector between two points.
+Ray Tracing: Calculating the vector from the ray's origin to
+the intersection point.
+*/
 t_vector	vector_subtract(t_vector v1, t_vector v2)
 {
 	t_vector	result;
@@ -46,7 +56,16 @@ t_vector	vector_scale(t_vector v, float scalar)
 	return (result);
 }
 
-// Function to calculate the dot product of two vectors
+/*
+Function to calculate the dot product of two vectors
+Angle Between Vectors: Used to find the angle between two vectors.
+If the dot product is zero, the vectors are orthogonal (perpendicular).
+
+Projection: The dot product is used to project one vector onto another.
+
+Determining Parallelism: If the dot product of two vectors is equal to the
+product of their magnitudes, the vectors are parallel.
+*/
 float	vector_dot_product(t_vector v1, t_vector v2)
 {
 	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);

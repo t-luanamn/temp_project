@@ -12,6 +12,13 @@
 
 #include "mrt.h"
 
+/*
+- Finds the closest object that the ray intersects in the scene and stores
+the hit information in hit_data.
+- Calculates the direction from the hit point to the light source by
+subtracting the hit point from the light's position.
+- Calculates the color at the hit point.
+*/
 t_colour	ray_trace(t_ray ray, t_mrt *scene)
 {
 	t_hit		hit_data;

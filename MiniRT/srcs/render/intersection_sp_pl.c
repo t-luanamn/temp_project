@@ -12,6 +12,10 @@
 
 #include "mrt.h"
 
+/*
+- Calculate the two possible solutions for t
+- Check if the first solution is valid (greater than a small epsilon)
+*/
 int	intersect_sphere_solutions(float a, float b, float discriminant, float *t)
 {
 	float	t0;
@@ -32,6 +36,31 @@ int	intersect_sphere_solutions(float a, float b, float discriminant, float *t)
 	return (0);
 }
 
+/*
+Vector Calculation:
+oc is the vector from the ray's origin to the sphere's center.
+a, b, and c are coefficients for the quadratic equation derived
+from the ray-sphere intersection formula.
+
+Quadratic Equation:
+The quadratic equation is derived from the geometric equation of a sphere
+and the parametric equation of a ray.
+The discriminant (b^2 - 4ac) determines the nature of the intersection:
+If the discriminant is negative, there are no real roots,
+meaning the ray does not intersect the sphere.
+If the discriminant is zero or positive, there are one or two real roots,
+indicating potential intersection points.
+
+Intersection Points:
+The function intersect_sphere_solutions calculates the potential intersection
+points (t0 and t1).
+It checks if these points are valid (greater than a small epsilon to avoid
+floating-point precision issues).
+
+Return Value:
+The function returns 1 if there is a valid intersection and 0 otherwise.
+The intersection point is stored in the variable pointed to by t.
+*/
 int	intersect_sphere(t_ray ray, t_sphere sphere, float *t)
 {
 	t_vector	oc;
@@ -51,6 +80,37 @@ int	intersect_sphere(t_ray ray, t_sphere sphere, float *t)
 	return (intersect_sphere_solutions(a, b, discriminant, t));
 }
 
+/*
+the quadratic equation for the intersection of a ray with a cylinder can be
+derived from the geometric properties of the cylinder and the ray.
+[ at^2 + bt + c = 0 ]
+Where:
+(a),(b),and(c) are coefficients that depend on the ray and cylinder parameters.
+( t ) is the parameter along the ray direction.
+
+Parallel Check:
+The function checks if the absolute value of the denominator is greater than
+a small epsilon value (1e-6). This check ensures that the ray is not parallel
+to the plane. If the ray is parallel, the function returns 0, no intersection.
+
+Vector Calculation:
+If the ray is not parallel, the function calculates the vector from the
+plane's position to the ray's origin.
+
+Intersection Point Calculation:
+The intersection point t is calculated using the plane equation.
+The dot product of plane_to_ray_origin and the plane's normal vector
+is divided by the denominator.
+
+Intersection Validity:
+The function checks if the calculated intersection point t is greater than
+or equal to 0. If it is, the function returns 1 indicating a valid intersection
+in front of the ray's origin. Otherwise, it returns 0.
+
+Return Value:
+The function returns 1 if there is a valid intersection and 0 otherwise.
+The intersection point is stored in the variable pointed to by t.
+*/
 int	intersect_plane(t_ray ray, t_plane plane, float *t)
 {
 	float		denominator;

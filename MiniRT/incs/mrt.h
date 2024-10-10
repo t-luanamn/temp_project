@@ -128,7 +128,7 @@ void		find_closest_plane(t_ray ray, t_mrt *scene, float *closest_t,
 void		find_closest_cylinder(t_ray ray, t_mrt *scene, float *closest_t,
 				t_cylinder **closest_cylinder);
 
-int			calculate_diffuse(int object_colour, float diff, t_mrt *scene);
+t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene);
 t_colour	calculate_hit_colour(t_mrt *scene, t_hit *hit_data,
 				t_vector light_dir);
 t_colour	calculate_sphere_colour(t_mrt *scene, t_hit *hit_data,

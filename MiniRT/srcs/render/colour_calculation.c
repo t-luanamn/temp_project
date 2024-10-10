@@ -34,12 +34,7 @@ t_colour	calculate_sphere_colour(t_mrt *scene, t_hit *hit_data,
 	normal = calculate_normal_sphere(hit_data->hit_point,
 			hit_data->closest_sphere);
 	diff = fmax(0.0, vector_dot_product(normal, light_dir));
-	colour.r = calculate_diffuse(hit_data->closest_sphere->colour.r,
-			diff, scene);
-	colour.g = calculate_diffuse(hit_data->closest_sphere->colour.g,
-			diff, scene);
-	colour.b = calculate_diffuse(hit_data->closest_sphere->colour.b,
-			diff, scene);
+	colour = calculate_diffuse(hit_data->closest_sphere->colour, diff, scene);
 	return (colour);
 }
 
@@ -52,12 +47,7 @@ t_colour	calculate_plane_colour(t_mrt *scene, t_hit *hit_data,
 
 	normal = calculate_normal_plane(hit_data->closest_plane);
 	diff = fmax(0.0, vector_dot_product(normal, light_dir));
-	colour.r = calculate_diffuse(hit_data->closest_plane->colour.r,
-			diff, scene);
-	colour.g = calculate_diffuse(hit_data->closest_plane->colour.g,
-			diff, scene);
-	colour.b = calculate_diffuse(hit_data->closest_plane->colour.b,
-			diff, scene);
+	colour = calculate_diffuse(hit_data->closest_plane->colour, diff, scene);
 	return (colour);
 }
 
@@ -71,11 +61,7 @@ t_colour	calculate_cylinder_colour(t_mrt *scene, t_hit *hit_data,
 	normal = calculate_normal_cylinder(hit_data->hit_point,
 			hit_data->closest_cylinder);
 	diff = fmax(0.0, vector_dot_product(normal, light_dir));
-	colour.r = calculate_diffuse(hit_data->closest_cylinder->colour.r,
-			diff, scene);
-	colour.g = calculate_diffuse(hit_data->closest_cylinder->colour.g,
-			diff, scene);
-	colour.b = calculate_diffuse(hit_data->closest_cylinder->colour.b,
+	colour = calculate_diffuse(hit_data->closest_cylinder->colour,
 			diff, scene);
 	return (colour);
 }

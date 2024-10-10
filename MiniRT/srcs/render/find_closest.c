@@ -20,6 +20,12 @@ void	init_hit_data(t_hit *hit_data)
 	hit_data->closest_cylinder = NULL;
 }
 
+/*
+The find_closest_objects function iterates through all objects in the scene
+(spheres, cylinders, and planes) to find the closest intersection point with
+a given ray. It updates the hit_data structure with information about the
+closest object and calculates the hit point.
+*/
 void	find_closest_objects(t_ray ray, t_mrt *scene, t_hit *hit_data)
 {
 	find_closest_sphere(ray, scene, &hit_data->closest_t,

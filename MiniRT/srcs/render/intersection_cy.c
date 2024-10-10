@@ -12,6 +12,7 @@
 
 #include "mrt.h"
 
+// Checks if the intersection point lies within the height of the cylinder.
 int	check_cylinder_height(float height, float cy_height, float t_val, float *t)
 {
 	if (height >= -1e-6 && height <= cy_height + 1e-6)
@@ -63,6 +64,35 @@ void	compute_t_values(float *abc, float discriminant, float *t_vals)
 	t_vals[1] = (-abc[1] + sqrt(discriminant)) / (2.0 * abc[0]);
 }
 
+/*
+intersect_cylinder_solutions:
+This function calculates the hit points for the potential t values and checks
+if these points lie within the cylinder's height using the
+check_cylinder_height function.
+
+compute_ray_cylinder_vectors:
+This function computes the vectors *d* and *o* which are used to form the
+quadratic equation. The vector *d* is the direction of the ray projected
+onto the plane perpendicular to the cylinder's axis. The vector *o* is the
+origin of the ray projected onto the same plane.
+
+The dot product of a vector with itself is used to calculate the magnitude
+squared of that vector.
+abc[0] = vector_dot_product(d, d) -> calculates the coefficient ( a )
+for the quadratic equation, which is the magnitude squared of
+the direction vector ( d ).
+
+compute_t_values:
+This function uses the quadratic formula to compute the potential t values for
+the intersections. Discriminant is used to determine if real solutions exist.
+
+intersect_cylinder:
+This is the main function that integrates all the above functions to determine
+if a ray intersects with a cylinder. It first computes the necessary vectors
+and coefficients, checks the discriminant, computes the potential t values,
+and finally checks if these values correspond to valid intersection points
+within the cylinder's height.
+*/
 int	intersect_cylinder(t_ray ray, t_cylinder cylinder, float *t)
 {
 	t_vector	d;
