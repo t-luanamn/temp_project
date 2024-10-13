@@ -19,12 +19,6 @@ Calculating Positions: Finding the resultant position
 when moving from one point to another.
 Computer Graphics: Calculating the position of objects in a scene.
 */
-/*
-Function to add two vectors
-Calculating Positions: Finding the resultant position
-when moving from one point to another.
-Computer Graphics: Calculating the position of objects in a scene.
-*/
 t_vector	vector_add(t_vector v1, t_vector v2)
 {
 	t_vector	result;
@@ -35,12 +29,6 @@ t_vector	vector_add(t_vector v1, t_vector v2)
 	return (result);
 }
 
-/*
-Function operation that subtracts one vector from another
-Calculating Displacement: Finding the displacement vector between two points.
-Ray Tracing: Calculating the vector from the ray's origin to
-the intersection point.
-*/
 /*
 Function operation that subtracts one vector from another
 Calculating Displacement: Finding the displacement vector between two points.
@@ -80,30 +68,6 @@ product of their magnitudes, the vectors are parallel.
 float	vector_dot(t_vector v1, t_vector v2)
 {
 	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
-}
-
-/*
-The vector_normalise function normalises a given vector.
-Normalising a vectormeans scaling it to have a length (or magnitude) of 1
-while maintaining its direction. This is useful in many applications,
-such as computer graphics, where unit vectors are often required.
-*/
-/*
-The vector_normalise function normalises a given vector.
-Normalising a vectormeans scaling it to have a length (or magnitude) of 1
-while maintaining its direction. This is useful in many applications,
-such as computer graphics, where unit vectors are often required.
-*/
-t_vector	vector_normalise(t_vector v)
-{
-	float		length;
-	t_vector	normalised_vector;
-
-	length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-	normalised_vector.x = v.x / length;
-	normalised_vector.y = v.y / length;
-	normalised_vector.z = v.z / length;
-	return (normalised_vector);
 }
 
 /*

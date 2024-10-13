@@ -55,9 +55,9 @@ typedef struct s_camera
 
 typedef struct s_camera_basis
 {
-	t_vector right;
-	t_vector up;
-	t_vector forward;
+	t_vector	right;
+	t_vector	up;
+	t_vector	forward;
 }	t_camera_basis;
 
 // Colour is unused in mandatory part

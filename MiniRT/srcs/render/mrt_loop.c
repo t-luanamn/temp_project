@@ -12,27 +12,9 @@
 
 #include "mrt.h"
 
-int	close_handler(t_mrt *mrt)
-{
-	printf("Closing...\n");
-	printf("Destroying mlx...\n");
-	if (mrt->mlx.img.img)
-		mlx_destroy_image(mrt->mlx.ptr, mrt->mlx.img.img);
-	if (mrt->mlx.win)
-	{
-		mlx_clear_window(mrt->mlx.ptr, mrt->mlx.win);
-		mlx_destroy_window(mrt->mlx.ptr, mrt->mlx.win);
-	}
-	printf("Freeing mrt...\n");
-	free_obj(mrt);
-	free(mrt->mlx.ptr);
-	printf("Cleaned...\n");
-	exit(EXIT_SUCCESS);
-}
-
 static int	key_hook(int keycode, t_mrt *mrt)
 {
-	printf("Key hook...\n");
+	printf("Key hook... %d\n", keycode);
 	if (keycode == ESC_KEY)
 		close_handler(mrt);
 	if (keycode == W_KEY || keycode == S_KEY
@@ -66,36 +48,36 @@ int	move_camera(t_mrt *mrt, int keycode)
 	return (1);
 }
 
-// t_vector	rotate_vector(t_vector v, t_vector orientation)
-// {
-// 	float	y1;
-// 	float	z1;
-// 	float	x2;
+t_vector	rotate_vector(t_vector v, t_vector rotation)
+{
+	t_vector	rotated;
+	t_vector	temp;
 
-// 	y1 = v.y * cos(orientation.x) - v.z * sin(orientation.x);
-// 	z1 = v.y * sin(orientation.x) + v.z * cos(orientation.x);
-// 	x2 = v.x * cos(orientation.y) + z1 * sin(orientation.y);
-// 	return ((t_vector){x2 * cos(orientation.z) - y1 * sin(orientation.z),
-// 		x2 * sin(orientation.z) + y1 * cos(orientation.z),
-// 		-v.x * sin(orientation.y) + z1 * cos(orientation.y)});
-// }
+	temp.x = v.x * cos(rotation.y) + v.z * sin(rotation.y);
+	temp.z = -v.x * sin(rotation.y) + v.z * cos(rotation.y);
+	temp.y = v.y;
+	rotated.y = temp.y * cos(rotation.x) - temp.z * sin(rotation.x);
+	rotated.z = temp.y * sin(rotation.x) + temp.z * cos(rotation.x);
+	rotated.x = temp.x;
+	return (rotated);
+}
 
 int	rotate_camera(t_mrt *mrt, int keycode)
 {
 	float		rotate_factor;
-	// t_vector	direction;
+	t_vector	rotation;
 
+	rotation = (t_vector){0, 0, 0};
 	rotate_factor = 0.1f;
 	if (keycode == LEFT_ARROW_KEY)
-		mrt->camera.orientation.x -= rotate_factor;
+		rotation.y = -rotate_factor;
 	if (keycode == RIGHT_ARROW_KEY)
-		mrt->camera.orientation.x += rotate_factor;
-	if (keycode == DOWN_ARROW_KEY)
-		mrt->camera.orientation.y -= rotate_factor;
+		rotation.y = rotate_factor;
 	if (keycode == UP_ARROW_KEY)
-		mrt->camera.orientation.y += rotate_factor;
-	// mrt->camera.orientation =
-	// 	vector_normalise(rotate_vector(direction, mrt->camera.orientation));
+		rotation.x = rotate_factor;
+	if (keycode == DOWN_ARROW_KEY)
+		rotation.x = -rotate_factor;
+	mrt->camera.orientation = rotate_vector(mrt->camera.orientation, rotation);
 	mrt_render(mrt);
 	return (1);
 }

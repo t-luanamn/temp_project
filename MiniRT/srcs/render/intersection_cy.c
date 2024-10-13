@@ -13,7 +13,6 @@
 #include "mrt.h"
 
 // Checks if the intersection point lies within the height of the cylinder.
-// Checks if the intersection point lies within the height of the cylinder.
 int	check_cylinder_height(float height, float cy_height, float t_val, float *t)
 {
 	if (height >= -1e-6 && height <= cy_height + 1e-6)

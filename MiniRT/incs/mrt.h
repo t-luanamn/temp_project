@@ -111,10 +111,8 @@ void		put_pixel(t_img *img, int x, int y, t_colour colour);
 void		render_pixel(t_mrt *mrt, int x, int y);
 t_vector	rotate_vector(t_vector v, t_vector orientation);
 t_vector	calculate_world_up(t_vector forward);
-void calculate_camera_basis(t_vector forward, t_camera_basis *basis);
-t_ray generate_ray(t_mrt *mrt, int x, int y, t_camera_basis basis);
-
-
+void		calculate_camera_basis(t_vector forward, t_camera_basis *basis);
+t_ray		generate_ray(t_mrt *mrt, int x, int y, t_camera_basis basis);
 
 t_vector	calculate_hit_point(t_ray ray, float t);
 t_vector	calculate_normal_sphere(t_vector hit_point, t_sphere *sphere);
