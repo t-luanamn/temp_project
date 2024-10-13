@@ -14,5 +14,5 @@
 
 void	print_error(const char *message)
 {
-	printf(RED"Error: %s\n"RST, message);
+	printf(RED"Error:\n%s\n"RST, message);
 }

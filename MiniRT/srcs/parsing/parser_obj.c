@@ -54,7 +54,7 @@ bool	parse_plane(t_mrt *mrt, char *line)
 		if (i == 1 && !parse_vector(data[i], &plane.position, false))
 			return (parsing_error("Invalid plane position", data));
 		if (i == 2 && !parse_vector(data[i], &plane.normal_vec, true))
-			return (parsing_error("Invalid plane normal vector", data));
+			return (parsing_error("Invalid plane vector or misconfig", data));
 		if (i == 3 && !parse_colour(data[i], &plane.colour))
 			return (parsing_error("Invalid plane colour", data));
 	}
@@ -74,7 +74,7 @@ static bool	parse_cylinder_parameters(char **data, t_cylinder *cylinder)
 		if (i == 1 && !parse_vector(data[i], &cylinder->position, false))
 			return (parsing_error("Invalid cylinder position", data));
 		if (i == 2 && !parse_vector(data[i], &cylinder->axis, true))
-			return (parsing_error("Invalid cylinder axis vector", data));
+			return (parsing_error("Invalid cylinder axis or misconfig", data));
 		if (i == 3 && !parse_float(data[i], &cylinder->diameter, 0.0, FLT_MAX))
 			return (parsing_error("Invalid cylinder diameter", data));
 		if (i == 4 && !parse_float(data[i], &cylinder->height, 0.0, FLT_MAX))
@@ -95,7 +95,7 @@ bool	parse_cylinder(t_mrt *mrt, char *line)
 		return (parsing_error("Invalid number of parameters", data), false);
 	ft_bzero(&cylinder, sizeof(t_cylinder));
 	if (!parse_cylinder_parameters(data, &cylinder))
-		return (free_array(data), false);
+		return (false);
 	if (!add_cylinder(mrt, cylinder))
 		return (free_array(data), false);
 	free_array(data);

@@ -56,7 +56,7 @@ bool	parse_camera(t_mrt *mrt, char *line)
 		if (i == 1 && !parse_vector(data[i], &cam.view_point, false))
 			return (parsing_error("Invalid camera view point", data));
 		if (i == 2 && !parse_vector(data[i], &cam.orientation, true))
-			return (parsing_error("Invalid camera orientation", data));
+			return (parsing_error("Invalid orientation or misconfig", data));
 		if (i == 3 && !parse_int(data[i], &cam.fov, 0, 180))
 			return (parsing_error("Invalid camera field of view", data));
 	}

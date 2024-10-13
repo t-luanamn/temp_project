@@ -55,10 +55,7 @@ bool	parse_vector(char *input, t_vector *vector, bool range_check)
 	if (range_check)
 	{
 		if (compare_vector(vector, 0, 0, 0))
-		{
-			print_error("Normal vector misconfiguration");
 			return_value = false;
-		}
 	}
 	free_array(components);
 	return (return_value);

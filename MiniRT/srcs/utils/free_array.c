@@ -19,10 +19,14 @@ void	free_array(char **arr)
 	i = 0;
 	if (!arr)
 		return ;
-	while (arr[i])
+	if (arr != NULL)
 	{
-		free(arr[i]);
-		i++;
+		while (arr[i])
+		{
+			free(arr[i]);
+			i++;
+		}
 	}
-	free(arr);
+	if (arr != NULL)
+		free(arr);
 }
