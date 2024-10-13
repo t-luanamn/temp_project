@@ -79,7 +79,7 @@ void    mlx_put_image_to_window(mlx_ptr_t *mlx_ptr, mlx_win_list_t *win_ptr, mlx
 {
   mlx_img_ctx_t	*imgctx;
 
-  printf("put image to window %d %d\n", x, y);
+  // printf("put image to window %d %d\n", x, y);
   if (!win_ptr->pixmgt)
     return ;
 

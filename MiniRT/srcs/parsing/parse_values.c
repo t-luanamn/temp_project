@@ -12,6 +12,11 @@
 
 #include "mrt.h"
 
+static bool	compare_vector(t_vector *vec, float x, float y, float z)
+{
+	return (vec->x == x && vec->y == y && vec->z == z);
+}
+
 static bool	validate_vector(char **components, bool range_check)
 {
 	int		i;
@@ -46,6 +51,14 @@ bool	parse_vector(char *input, t_vector *vector, bool range_check)
 		vector->x = ft_atof(components[0]);
 		vector->y = ft_atof(components[1]);
 		vector->z = ft_atof(components[2]);
+	}
+	if (range_check)
+	{
+		if (compare_vector(vector, 0, 0, 0))
+		{
+			print_error("Normal vector misconfiguration");
+			return_value = false;
+		}
 	}
 	free_array(components);
 	return (return_value);

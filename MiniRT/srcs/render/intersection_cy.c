@@ -13,6 +13,7 @@
 #include "mrt.h"
 
 // Checks if the intersection point lies within the height of the cylinder.
+// Checks if the intersection point lies within the height of the cylinder.
 int	check_cylinder_height(float height, float cy_height, float t_val, float *t)
 {
 	if (height >= -1e-6 && height <= cy_height + 1e-6)
@@ -34,9 +35,9 @@ int	intersect_cylinder_solutions(t_ray ray, t_cylinder cylinder,
 	hit_point[1] = calculate_hit_point(ray, t_vals[1]);
 	base_to_hit[0] = vector_subtract(hit_point[0], cylinder.position);
 	base_to_hit[1] = vector_subtract(hit_point[1], cylinder.position);
-	height[0] = vector_dot_product(
+	height[0] = vector_dot(
 			base_to_hit[0], vector_normalise(cylinder.axis));
-	height[1] = vector_dot_product(
+	height[1] = vector_dot(
 			base_to_hit[1], vector_normalise(cylinder.axis));
 	if (check_cylinder_height(height[0], cylinder.height, t_vals[0], t))
 		return (1);
@@ -54,8 +55,8 @@ void	compute_ray_cylinder_vectors(t_ray ray, t_cylinder cylinder,
 	oc = vector_subtract(ray.origin, cylinder.position);
 	axis = vector_normalise(cylinder.axis);
 	*d = vector_subtract(ray.direction, vector_scale(axis,
-				vector_dot_product(ray.direction, axis)));
-	*o = vector_subtract(oc, vector_scale(axis, vector_dot_product(oc, axis)));
+				vector_dot(ray.direction, axis)));
+	*o = vector_subtract(oc, vector_scale(axis, vector_dot(oc, axis)));
 }
 
 void	compute_t_values(float *abc, float discriminant, float *t_vals)
@@ -78,7 +79,7 @@ origin of the ray projected onto the same plane.
 
 The dot product of a vector with itself is used to calculate the magnitude
 squared of that vector.
-abc[0] = vector_dot_product(d, d) -> calculates the coefficient ( a )
+abc[0] = vector_dot(d, d) -> calculates the coefficient ( a )
 for the quadratic equation, which is the magnitude squared of
 the direction vector ( d ).
 
@@ -102,9 +103,9 @@ int	intersect_cylinder(t_ray ray, t_cylinder cylinder, float *t)
 	float		t_vals[2];
 
 	compute_ray_cylinder_vectors(ray, cylinder, &d, &o);
-	abc[0] = vector_dot_product(d, d);
-	abc[1] = 2.0 * vector_dot_product(d, o);
-	abc[2] = vector_dot_product(o, o) - pow(cylinder.diameter / 2, 2);
+	abc[0] = vector_dot(d, d);
+	abc[1] = 2.0 * vector_dot(d, o);
+	abc[2] = vector_dot(o, o) - pow(cylinder.diameter / 2, 2);
 	discriminant = abc[1] * abc[1] - 4 * abc[0] * abc[2];
 	if (discriminant < 0)
 		return (0);

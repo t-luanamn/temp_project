@@ -1,6 +1,6 @@
 NAME			= miniRT
 CC				= gcc
-CFLAGS			= -Wall -Wextra -Werror #-g #-fsanitize=address
+CFLAGS			= -Wall -Wextra -Werror -g #-fsanitize=address
 
 SRCS			= $(shell find ./srcs -name '*.c')
 SRCS_INC		= ./incs

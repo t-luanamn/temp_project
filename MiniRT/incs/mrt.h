@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mrt.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tytang <tytang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 21:17:24 by tluanamn          #+#    #+#             */
-/*   Updated: 2024/09/15 21:17:25 by tluanamn         ###   ########.fr       */
+/*   Updated: 2024/10/11 15:26:06 by tytang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,8 @@ void		print_array(char **array);
 t_vector	vector_add(t_vector v1, t_vector v2);
 t_vector	vector_subtract(t_vector v1, t_vector v2);
 t_vector	vector_scale(t_vector v, float scalar);
-float		vector_dot_product(t_vector v1, t_vector v2);
+float		vector_dot(t_vector v1, t_vector v2);
+t_vector	vector_cross(t_vector v1, t_vector v2);
 t_vector	vector_normalise(t_vector v);
 
 // Print values
@@ -100,12 +101,20 @@ bool		mrt_init(t_window *mlx);
 void		mrt_loop(t_mrt *mrt);
 void		free_obj(t_mrt *mrt);
 int			close_handler(t_mrt *mrt);
+int			move_camera(t_mrt *mrt, int keycode);
+int			rotate_camera(t_mrt *mrt, int keycode);
 
 // Render
 void		mrt_render(t_mrt *mrt);
 t_colour	ray_trace(t_ray ray, t_mrt *scene);
 void		put_pixel(t_img *img, int x, int y, t_colour colour);
-void		render_pixel(t_mrt *mrt, int x, int y, float aspect_ratio);
+void		render_pixel(t_mrt *mrt, int x, int y);
+t_vector	rotate_vector(t_vector v, t_vector orientation);
+t_vector	calculate_world_up(t_vector forward);
+void calculate_camera_basis(t_vector forward, t_camera_basis *basis);
+t_ray generate_ray(t_mrt *mrt, int x, int y, t_camera_basis basis);
+
+
 
 t_vector	calculate_hit_point(t_ray ray, float t);
 t_vector	calculate_normal_sphere(t_vector hit_point, t_sphere *sphere);
@@ -128,6 +137,7 @@ void		find_closest_plane(t_ray ray, t_mrt *scene, float *closest_t,
 void		find_closest_cylinder(t_ray ray, t_mrt *scene, float *closest_t,
 				t_cylinder **closest_cylinder);
 
+t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene);
 t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene);
 t_colour	calculate_hit_colour(t_mrt *scene, t_hit *hit_data,
 				t_vector light_dir);

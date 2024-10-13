@@ -70,9 +70,9 @@ int	intersect_sphere(t_ray ray, t_sphere sphere, float *t)
 	float		discriminant;
 
 	oc = vector_subtract(ray.origin, sphere.position);
-	a = vector_dot_product(ray.direction, ray.direction);
-	b = 2.0 * vector_dot_product(oc, ray.direction);
-	c = vector_dot_product(oc, oc) - (sphere.diameter / 2)
+	a = vector_dot(ray.direction, ray.direction);
+	b = 2.0 * vector_dot(oc, ray.direction);
+	c = vector_dot(oc, oc) - (sphere.diameter / 2)
 		* (sphere.diameter / 2);
 	discriminant = b * b - 4 * a * c;
 	if (discriminant < 0)
@@ -116,12 +116,12 @@ int	intersect_plane(t_ray ray, t_plane plane, float *t)
 	float		denominator;
 	t_vector	plane_to_ray_origin;
 
-	denominator = vector_dot_product(vector_normalise(plane.normal_vec),
+	denominator = vector_dot(vector_normalise(plane.normal_vec),
 			ray.direction);
 	if (fabs(denominator) > 1e-6)
 	{
 		plane_to_ray_origin = vector_subtract(plane.position, ray.origin);
-		*t = vector_dot_product(plane_to_ray_origin, plane.normal_vec)
+		*t = vector_dot(plane_to_ray_origin, plane.normal_vec)
 			/ denominator;
 		return (*t >= 0);
 	}

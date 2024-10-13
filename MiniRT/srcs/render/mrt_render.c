@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   mrt_render.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tytang <tytang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 14:57:57 by tluanamn          #+#    #+#             */
-/*   Updated: 2024/10/05 14:57:59 by tluanamn         ###   ########.fr       */
+/*   Updated: 2024/10/11 16:35:10 by tytang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "mrt.h"
 
+/*
+- Finds the closest object that the ray intersects in the scene and stores
+the hit information in hit_data.
+- Calculates the direction from the hit point to the light source by
+subtracting the hit point from the light's position.
+- Calculates the color at the hit point.
+*/
 /*
 - Finds the closest object that the ray intersects in the scene and stores
 the hit information in hit_data.
@@ -33,6 +40,40 @@ t_colour	ray_trace(t_ray ray, t_mrt *scene)
 	return (colour);
 }
 
+/*
+Calculate the Memory Address of the Pixel:
+img->addr is the base address of the image's pixel data.
+y * img->line_length calculates the offset to the start of the row.
+x * (img->bits_per_pixel / 8) calculates the offset to the specific pixel
+	within the row.
+Adding these offsets to img->addr gives the address of the pixel (dst).
+
+Set the Pixel Color:
+The color is set by combining the red, green, and blue components.
+(colour.r << 16) shifts the red component to the highest byte.
+(colour.g << 8) shifts the green component to the middle byte.
+colour.b remains in the lowest byte.
+The combined value is then stored at the calculated address (dst).
+
+Example:
+Assume:
+img->addr points to the start of the pixel data.
+img->line_length is 800 bytes
+(for an image width of 200 pixels and 32 bits per pixel).
+img->bits_per_pixel is 32 (4 bytes per pixel).
+To set the pixel at coordinates (10, 20) 
+to a color with RGB values (255, 0, 0) (red):
+
+Calculate the address:
+y * img->line_length = 20 * 800 = 16000
+x * (img->bits_per_pixel / 8) = 10 * 4 = 40
+dst = img->addr + 16000 + 40 = img->addr + 16040
+
+Set the color:
+colour.r = 255, colour.g = 0, colour.b = 0
+Combined color value: (255 << 16) | (0 << 8) | 0 = 0xFF0000
+Store 0xFF0000 at img->addr + 16040.
+*/
 /*
 Calculate the Memory Address of the Pixel:
 img->addr is the base address of the image's pixel data.
@@ -91,51 +132,44 @@ through each pixel. It ensures that the rays spread out correctly according to
 the camera's field of view.
 
 ** Ray Direction **
-determines the direction in which the ray will be cast from the camera through
-each pixel on the screen
-- Normalized Screen Coordinates:
-	u(horizontal) and v(vertical), from 0 to 1
-- Offset and Scaling:
-	- Offset by 0.5 to center the ray in the pixel
-	(u - 0.5) and (v - 0.5) centre the coordinates around the middle of
-	the screen. This shifts the range from [0, 1] to [-0.5, 0.5].
-	- Scale by the aspect ratio (image does not get distorted)
-	and the field of view (camera's perspective)
+Normalise the camera's orientation to get the forward direction
+Check if the forward vector is pointing along the y-axis (up or down)
+If the camera is looking directly up or down, use the z-axis as the "up" vector
+Otherwise, use the regular world up vector
+Calculate the right vector (perpendicular to forward and world_up)
+The up vector is recalculated as the cross product of right and forward
+Calculate screen space coordinates (u, v)
+Calculate the ray direction by adding the scaled components of
+	forward, right, and up
 */
-void	render_pixel(t_mrt *mrt, int x, int y, float aspect_ratio)
+void render_pixel(t_mrt *mrt, int x, int y)
 {
-	t_ray		ray;
-	t_colour	colour;
-	float		u;
-	float		v;
-	float		fov_scale;
+    t_ray ray;
+    t_colour colour;
+    t_camera_basis basis;
 
-	fov_scale = tan(mrt->camera.fov * 0.5 * M_PI / 180.0);
-	u = (float)x / (float)W_WIDTH;
-	v = (float)(W_HEIGHT - y) / (float)W_HEIGHT;
-	ray.origin = mrt->camera.view_point;
-	ray.direction = vector_normalise((t_vector){
-			(u - 0.5) * aspect_ratio * fov_scale,
-			(v - 0.5) * fov_scale, 1});
-	colour = ray_trace(ray, mrt);
-	put_pixel(&mrt->mlx.img, x, y, colour);
+    basis.forward = vector_normalise(mrt->camera.orientation);
+    calculate_camera_basis(basis.forward, &basis);
+    ray = generate_ray(mrt, x, y, basis);
+    colour = ray_trace(ray, mrt);
+    put_pixel(&mrt->mlx.img, x, y, colour);
 }
 
 void	mrt_render(t_mrt *mrt)
 {
 	int		x;
 	int		y;
-	float	aspect_ratio;
 
 	printf("Rendering...\n");
-	aspect_ratio = (float)W_WIDTH / (float)W_HEIGHT;
+	mrt->camera.aspect_ratio = (float)W_WIDTH / (float)W_HEIGHT;
+	mrt->camera.scale = tan(mrt->camera.fov * 0.5 * M_PI / 180.0);
 	y = 0;
 	while (y < W_HEIGHT)
 	{
 		x = 0;
 		while (x < W_WIDTH)
 		{
-			render_pixel(mrt, x, y, aspect_ratio);
+			render_pixel(mrt, x, y);
 			x++;
 		}
 		y++;

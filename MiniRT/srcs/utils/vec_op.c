@@ -19,6 +19,12 @@ Calculating Positions: Finding the resultant position
 when moving from one point to another.
 Computer Graphics: Calculating the position of objects in a scene.
 */
+/*
+Function to add two vectors
+Calculating Positions: Finding the resultant position
+when moving from one point to another.
+Computer Graphics: Calculating the position of objects in a scene.
+*/
 t_vector	vector_add(t_vector v1, t_vector v2)
 {
 	t_vector	result;
@@ -29,6 +35,12 @@ t_vector	vector_add(t_vector v1, t_vector v2)
 	return (result);
 }
 
+/*
+Function operation that subtracts one vector from another
+Calculating Displacement: Finding the displacement vector between two points.
+Ray Tracing: Calculating the vector from the ray's origin to
+the intersection point.
+*/
 /*
 Function operation that subtracts one vector from another
 Calculating Displacement: Finding the displacement vector between two points.
@@ -57,7 +69,6 @@ t_vector	vector_scale(t_vector v, float scalar)
 }
 
 /*
-Function to calculate the dot product of two vectors
 Angle Between Vectors: Used to find the angle between two vectors.
 If the dot product is zero, the vectors are orthogonal (perpendicular).
 
@@ -66,11 +77,17 @@ Projection: The dot product is used to project one vector onto another.
 Determining Parallelism: If the dot product of two vectors is equal to the
 product of their magnitudes, the vectors are parallel.
 */
-float	vector_dot_product(t_vector v1, t_vector v2)
+float	vector_dot(t_vector v1, t_vector v2)
 {
 	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
 }
 
+/*
+The vector_normalise function normalises a given vector.
+Normalising a vectormeans scaling it to have a length (or magnitude) of 1
+while maintaining its direction. This is useful in many applications,
+such as computer graphics, where unit vectors are often required.
+*/
 /*
 The vector_normalise function normalises a given vector.
 Normalising a vectormeans scaling it to have a length (or magnitude) of 1
@@ -87,4 +104,29 @@ t_vector	vector_normalise(t_vector v)
 	normalised_vector.y = v.y / length;
 	normalised_vector.z = v.z / length;
 	return (normalised_vector);
+}
+
+/*
+The cross product of two vectors results in a third vector that is perpendicular
+to the plane formed by the original two vectors.
+
+Calculating Normals: calculate the normal vector to a surface.
+This is essential for determining how light interacts with the surface.
+
+Camera Orientation: The cross product helps in defining the right and up
+vectors of the camera's coordinate system, ensuring the camera is correctly
+oriented in 3D space.
+
+Reflection and Refraction: In advanced ray tracing, the cross product can be
+used to calculate reflection and refraction directions based on the surface
+normal and the incoming ray direction.
+*/
+t_vector	vector_cross(t_vector v1, t_vector v2)
+{
+	t_vector	result;
+
+	result.x = v1.y * v2.z - v1.z * v2.y;
+	result.y = v1.z * v2.x - v1.x * v2.z;
+	result.z = v1.x * v2.y - v1.y * v2.x;
+	return (result);
 }

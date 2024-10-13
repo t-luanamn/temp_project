@@ -43,7 +43,7 @@ t_vector	calculate_normal_cylinder(t_vector hit_point, t_cylinder *cylinder)
 	t_vector	normal;
 
 	to_hit = vector_subtract(hit_point, cylinder->position);
-	axis_normal = vector_scale(cylinder->axis, vector_dot_product(to_hit,
+	axis_normal = vector_scale(cylinder->axis, vector_dot(to_hit,
 				cylinder->axis));
 	normal = vector_subtract(to_hit, axis_normal);
 	return (vector_normalise(normal));
