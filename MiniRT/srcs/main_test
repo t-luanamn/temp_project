@@ -1,0 +1,952 @@
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+#include <stdio.h>
+#include "mlx.h"
+#include "libft.h"
+#include "define.h"
+#include "object.h"
+#include "mrt.h"
+
+# define PARAMS_AMBIENT 3
+# define PARAMS_CAMERA 4
+# define PARAMS_LIGHT 4
+# define PARAMS_PLANE 4
+# define PARAMS_SPHERE 4
+# define PARAMS_CYLINDER 6
+# define FLT_MAX 3.402823466e+38F
+
+// Window
+# define W_WIDTH 1280
+# define W_HEIGHT 720
+
+/*
+
+# Ambient light: A
+Number of parameters: 3
+- identifier: A
+- ambient lighting ratio in range [0.0,1.0]: 0.2
+- R,G,B colors in range [0-255]: 255,255,255
+
+# Camera: C
+Number of parameters: 4
+- identifier: C
+- x,y,z coordinates of the view point: -50.0,0,20
+- 3d normalized orientation vector. In range [-1,1]
+	for each x,y,z axis: 0.0,0.0,1.0
+- FOV : Horizontal field of view in degrees in range [0,180]: 70
+
+# Light: L
+Number of parameters: 4
+- identifier: L
+- x,y,z coordinates of the light point: -40.0,50.0,0.0
+- the light brightness ratio in range [0.0,1.0]: 0.6
+- (unused in mandatory part)R,G,B colors in range [0-255]: 10, 0, 255
+
+-------
+
+# Sphere: sp
+Number of parameters: 4
+- identifier: sp
+- x,y,z coordinates of the sphere center: 0.0,0.0,20.6
+- the sphere diameter: 12.6
+- R,G,B colors in range [0-255]: 10,0,255
+
+# Plane: pl
+Number of parameters: 4
+- identifier: pl
+- x,y,z coordinates of a point in the plane: 0.0,0.0,-10.0
+- 3d normalized normal vector. In range [-1,1] for each x,y,z axis: 0.0,1.0,0.0
+- R,G,B colors in range [0-255]: 0,0,225
+
+# Cylinder: cy
+Number of parameters: 6
+- identifier: cy
+- x,y,z coordinates of the center of the cylinder: 50.0,0.0,20.6
+- 3d normalized vector of axis of cylinder. In range [-1,1]
+	for each x,y,z axis: 0.0,0.0,1.0
+- the cylinder diameter: 14.2
+- the cylinder height: 21.42
+- R,G,B colors in range [0,255]: 10, 0, 255
+*/
+
+typedef struct s_colour
+{
+	int	r;
+	int	g;
+	int	b;
+}	t_colour;
+
+typedef struct s_vector
+{
+	float	x;
+	float	y;
+	float	z;
+}	t_vector;
+
+typedef struct s_img
+{
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		endian;
+	int		line_length;
+}	t_img;
+
+typedef struct s_ambient
+{
+	float		ratio;
+	t_colour	colour;
+}	t_ambient;
+
+typedef struct s_camera
+{
+	t_vector	view_point;
+	t_vector	orientation;
+	int			fov;
+	float		scale;
+	float		aspect_ratio;
+}	t_camera;
+
+typedef struct s_camera_basis
+{
+	t_vector	right;
+	t_vector	up;
+	t_vector	forward;
+}	t_camera_basis;
+
+// Colour is unused in mandatory part
+typedef struct s_light
+{
+	t_vector	position;
+	float		brightness;
+	t_colour	colour;
+}	t_light;
+
+typedef struct s_sphere
+{
+	t_vector	position;
+	float		diameter;
+	t_colour	colour;
+}	t_sphere;
+
+typedef struct s_plane
+{
+	t_vector	position;
+	t_vector	normal_vec;
+	t_colour	colour;
+}	t_plane;
+
+typedef struct s_cylinder
+{
+	t_vector	position;
+	t_vector	axis;
+	float		diameter;
+	float		height;
+	t_colour	colour;
+}	t_cylinder;
+
+typedef struct s_ray
+{
+	t_vector	origin;
+	t_vector	direction;
+}	t_ray;
+
+typedef struct s_hit
+{
+	float		closest_t;
+	t_sphere	*closest_sphere;
+	t_plane		*closest_plane;
+	t_cylinder	*closest_cylinder;
+	t_vector	hit_point;
+}	t_hit;
+
+typedef struct s_window
+{
+	void	*ptr;
+	void	*win;
+	t_img	img;
+}	t_window;
+
+typedef struct s_mrt
+{
+	t_window	mlx;
+	t_ambient	ambient;
+	t_camera	camera;
+	t_light		light;
+	t_sphere	*spheres;
+	t_plane		*planes;
+	t_cylinder	*cylinders;
+	int			num_ambient;
+	int			num_camera;
+	int			num_lights;
+	int			num_spheres;
+	int			num_planes;
+	int			num_cylinders;
+}	t_mrt;
+
+// Error
+void		print_error(const char *message);
+bool		parsing_error(const char *message, char **data);
+
+// Check
+bool		check_file(t_mrt *mrt, const char *file_name);
+bool		check_line(t_mrt *mrt, const char *file_name);
+
+// Parsing
+bool		parser(t_mrt *mrt, char *line);
+bool		parse_vector(char *input, t_vector *vector, bool range_check);
+bool		parse_colour(char *input, t_colour *colour);
+bool		parse_float(char *input, float *value, float min, float max);
+bool		parse_int(char *input, int *value, int min, int max);
+bool		parse_ambient(t_mrt *mrt, char *line);
+bool		parse_camera(t_mrt *mrt, char *line);
+bool		parse_light(t_mrt *mrt, char *line);
+bool		parse_sphere(t_mrt *mrt, char *line);
+bool		parse_plane(t_mrt *mrt, char *line);
+bool		parse_cylinder(t_mrt *mrt, char *line);
+bool		add_sphere(t_mrt *mrt, t_sphere sphere);
+bool		add_plane(t_mrt *mrt, t_plane plane);
+bool		add_cylinder(t_mrt *mrt, t_cylinder cylinder);
+
+// Utils
+void		free_array(char **arr);
+void		free_mrt(t_mrt *mrt);
+int			count_parameters(char **array);
+void		print_array(char **array);
+
+// Vector operations
+t_vector	vector_add(t_vector v1, t_vector v2);
+t_vector	vector_subtract(t_vector v1, t_vector v2);
+t_vector	vector_scale(t_vector v, float scalar);
+float		vector_dot(t_vector v1, t_vector v2);
+t_vector	vector_cross(t_vector v1, t_vector v2);
+t_vector	vector_normalise(t_vector v);
+
+// Print values
+void		print_mrt(t_mrt *mrt);
+void		print_colour(t_colour colour);
+void		print_vector(t_vector vector);
+void		print_ambient(t_ambient ambient);
+void		print_camera(t_camera camera);
+void		print_light(t_light light);
+void		print_sphere(t_sphere sphere, int i);
+void		print_plane(t_plane plane, int i);
+void		print_cylinder(t_cylinder cylinder, int i);
+
+// Init and clear
+bool		mrt_init(t_window *mlx);
+void		mrt_loop(t_mrt *mrt);
+void		free_obj(t_mrt *mrt);
+int			close_handler(t_mrt *mrt);
+int			move_camera(t_mrt *mrt, int keycode);
+int			rotate_camera(t_mrt *mrt, int keycode);
+
+// Render
+void		mrt_render(t_mrt *mrt);
+t_colour	ray_trace(t_ray ray, t_mrt *scene);
+void		put_pixel(t_img *img, int x, int y, t_colour colour);
+void		render_pixel(t_mrt *mrt, int x, int y);
+t_vector	rotate_vector(t_vector v, t_vector orientation);
+t_vector	calculate_world_up(t_vector forward);
+void		calculate_camera_basis(t_vector forward, t_camera_basis *basis);
+t_ray		generate_ray(t_mrt *mrt, int x, int y, t_camera_basis basis);
+
+t_vector	calculate_hit_point(t_ray ray, float t);
+t_vector	calculate_normal_sphere(t_vector hit_point, t_sphere *sphere);
+t_vector	calculate_normal_plane(t_plane *plane);
+t_vector	calculate_normal_cylinder(t_vector hit_point, t_cylinder *cylinder);
+
+int			intersect_sphere(t_ray ray, t_sphere sphere, float *t);
+int			intersect_sphere_solutions(float a, float b, float discriminant,
+				float *t);
+int			intersect_plane(t_ray ray, t_plane plane, float *t);
+int			intersect_cylinder(t_ray ray, t_cylinder cylinder, float *t);
+int			intersect_cylinder_solutions(t_ray ray, t_cylinder cylinder,
+				float *t_vals, float *t);
+void		init_hit_data(t_hit *hit_data);
+void		find_closest_objects(t_ray ray, t_mrt *scene, t_hit *hit_data);
+void		find_closest_sphere(t_ray ray, t_mrt *scene, float *closest_t,
+				t_sphere **closest_sphere);
+void		find_closest_plane(t_ray ray, t_mrt *scene, float *closest_t,
+				t_plane **closest_plane);
+void		find_closest_cylinder(t_ray ray, t_mrt *scene, float *closest_t,
+				t_cylinder **closest_cylinder);
+
+t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene);
+t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene);
+t_colour	calculate_hit_colour(t_mrt *scene, t_hit *hit_data,
+				t_vector light_dir);
+t_colour	calculate_sphere_colour(t_mrt *scene, t_hit *hit_data,
+				t_vector light_dir);
+t_colour	calculate_plane_colour(t_mrt *scene, t_hit *hit_data,
+				t_vector light_dir);
+t_colour	calculate_cylinder_colour(t_mrt *scene, t_hit *hit_data,
+				t_vector light_dir);
+t_colour	calculate_ambient_colour(t_mrt *scene);
+
+t_vector	vector_normalise(t_vector v)
+{
+	float		length;
+	t_vector	normalised_vector;
+
+	length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	normalised_vector.x = v.x / length;
+	normalised_vector.y = v.y / length;
+	normalised_vector.z = v.z / length;
+	return (normalised_vector);
+}
+
+t_vector	vector_add(t_vector v1, t_vector v2)
+{
+	t_vector	result;
+
+	result.x = v1.x + v2.x;
+	result.y = v1.y + v2.y;
+	result.z = v1.z + v2.z;
+	return (result);
+}
+
+t_vector	vector_subtract(t_vector v1, t_vector v2)
+{
+	t_vector	result;
+
+	result.x = v1.x - v2.x;
+	result.y = v1.y - v2.y;
+	result.z = v1.z - v2.z;
+	return (result);
+}
+
+t_vector	vector_scale(t_vector v, float scalar)
+{
+	t_vector	result;
+
+	result.x = v.x * scalar;
+	result.y = v.y * scalar;
+	result.z = v.z * scalar;
+	return (result);
+}
+
+float	vector_dot(t_vector v1, t_vector v2)
+{
+	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
+}
+
+t_vector	vector_cross(t_vector v1, t_vector v2)
+{
+	t_vector	result;
+
+	result.x = v1.y * v2.z - v1.z * v2.y;
+	result.y = v1.z * v2.x - v1.x * v2.z;
+	result.z = v1.x * v2.y - v1.y * v2.x;
+	return (result);
+}
+
+void	init_hit_data(t_hit *hit_data)
+{
+	hit_data->closest_t = INFINITY;
+	hit_data->closest_sphere = NULL;
+	hit_data->closest_plane = NULL;
+	hit_data->closest_cylinder = NULL;
+}
+
+/*
+The find_closest_objects function iterates through all objects in the scene
+(spheres, cylinders, and planes) to find the closest intersection point with
+a given ray. It updates the hit_data structure with information about the
+closest object and calculates the hit point.
+*/
+void	find_closest_objects(t_ray ray, t_mrt *scene, t_hit *hit_data)
+{
+	find_closest_sphere(ray, scene, &hit_data->closest_t,
+		&hit_data->closest_sphere);
+	find_closest_cylinder(ray, scene, &hit_data->closest_t,
+		&hit_data->closest_cylinder);
+	find_closest_plane(ray, scene, &hit_data->closest_t,
+		&hit_data->closest_plane);
+	hit_data->hit_point = calculate_hit_point(ray, hit_data->closest_t);
+}
+
+void	find_closest_sphere(t_ray ray, t_mrt *scene, float *closest_t,
+	t_sphere **closest_sphere)
+{
+	int		i;
+	float	t;
+
+	i = 0;
+	while (i < scene->num_spheres)
+	{
+		if (intersect_sphere(ray, scene->spheres[i], &t) && t < *closest_t)
+		{
+			*closest_t = t;
+			*closest_sphere = &scene->spheres[i];
+		}
+		i++;
+	}
+}
+
+void	find_closest_plane(t_ray ray, t_mrt *scene, float *closest_t,
+	t_plane **closest_plane)
+{
+	int		i;
+	float	t;
+
+	i = 0;
+	while (i < scene->num_planes)
+	{
+		if (intersect_plane(ray, scene->planes[i], &t) && t < *closest_t)
+		{
+			*closest_t = t;
+			*closest_plane = &scene->planes[i];
+		}
+		i++;
+	}
+}
+
+void	find_closest_cylinder(t_ray ray, t_mrt *scene, float *closest_t,
+	t_cylinder **closest_cylinder)
+{
+	int		i;
+	float	t;
+
+	i = 0;
+	while (i < scene->num_cylinders)
+	{
+		if (intersect_cylinder(ray, scene->cylinders[i], &t) && t < *closest_t)
+		{
+			*closest_t = t;
+			*closest_cylinder = &scene->cylinders[i];
+		}
+		i++;
+	}
+}
+
+// Checks if the intersection point lies within the height of the cylinder.
+int	check_cylinder_height(float height, float cy_height, float t_val, float *t)
+{
+	if (height >= -1e-6 && height <= cy_height + 1e-6)
+	{
+		*t = t_val;
+		return (1);
+	}
+	return (0);
+}
+
+int	intersect_cylinder_solutions(t_ray ray, t_cylinder cylinder,
+		float *t_vals, float *t)
+{
+	t_vector	hit_point[2];
+	t_vector	base_to_hit[2];
+	float		height[2];
+
+	hit_point[0] = calculate_hit_point(ray, t_vals[0]);
+	hit_point[1] = calculate_hit_point(ray, t_vals[1]);
+	base_to_hit[0] = vector_subtract(hit_point[0], cylinder.position);
+	base_to_hit[1] = vector_subtract(hit_point[1], cylinder.position);
+	height[0] = vector_dot(
+			base_to_hit[0], vector_normalise(cylinder.axis));
+	height[1] = vector_dot(
+			base_to_hit[1], vector_normalise(cylinder.axis));
+	if (check_cylinder_height(height[0], cylinder.height, t_vals[0], t))
+		return (1);
+	if (check_cylinder_height(height[1], cylinder.height, t_vals[1], t))
+		return (1);
+	return (0);
+}
+
+void	compute_ray_cylinder_vectors(t_ray ray, t_cylinder cylinder,
+			t_vector *d, t_vector *o)
+{
+	t_vector	axis;
+	t_vector	oc;
+
+	oc = vector_subtract(ray.origin, cylinder.position);
+	axis = vector_normalise(cylinder.axis);
+	*d = vector_subtract(ray.direction, vector_scale(axis,
+				vector_dot(ray.direction, axis)));
+	*o = vector_subtract(oc, vector_scale(axis, vector_dot(oc, axis)));
+}
+
+void	compute_t_values(float *abc, float discriminant, float *t_vals)
+{
+	t_vals[0] = (-abc[1] - sqrt(discriminant)) / (2.0 * abc[0]);
+	t_vals[1] = (-abc[1] + sqrt(discriminant)) / (2.0 * abc[0]);
+}
+
+/*
+intersect_cylinder_solutions:
+This function calculates the hit points for the potential t values and checks
+if these points lie within the cylinder's height using the
+check_cylinder_height function.
+
+compute_ray_cylinder_vectors:
+This function computes the vectors *d* and *o* which are used to form the
+quadratic equation. The vector *d* is the direction of the ray projected
+onto the plane perpendicular to the cylinder's axis. The vector *o* is the
+origin of the ray projected onto the same plane.
+
+The dot product of a vector with itself is used to calculate the magnitude
+squared of that vector.
+abc[0] = vector_dot(d, d) -> calculates the coefficient ( a )
+for the quadratic equation, which is the magnitude squared of
+the direction vector ( d ).
+
+compute_t_values:
+This function uses the quadratic formula to compute the potential t values for
+the intersections. Discriminant is used to determine if real solutions exist.
+
+intersect_cylinder:
+This is the main function that integrates all the above functions to determine
+if a ray intersects with a cylinder. It first computes the necessary vectors
+and coefficients, checks the discriminant, computes the potential t values,
+and finally checks if these values correspond to valid intersection points
+within the cylinder's height.
+*/
+int	intersect_cylinder(t_ray ray, t_cylinder cylinder, float *t)
+{
+	t_vector	d;
+	t_vector	o;
+	float		abc[3];
+	float		discriminant;
+	float		t_vals[2];
+
+	compute_ray_cylinder_vectors(ray, cylinder, &d, &o);
+	abc[0] = vector_dot(d, d);
+	abc[1] = 2.0 * vector_dot(d, o);
+	abc[2] = vector_dot(o, o) - pow(cylinder.diameter / 2, 2);
+	discriminant = abc[1] * abc[1] - 4 * abc[0] * abc[2];
+	if (discriminant < 0)
+		return (0);
+	compute_t_values(abc, discriminant, t_vals);
+	if (intersect_cylinder_solutions(ray, cylinder, t_vals, t))
+		return (1);
+	return (0);
+}
+
+/*
+- Calculate the two possible solutions for t
+- Check if the first solution is valid (greater than a small epsilon)
+*/
+int	intersect_sphere_solutions(float a, float b, float discriminant, float *t)
+{
+	float	t0;
+	float	t1;
+
+	t0 = (-b - sqrt(discriminant)) / (2.0 * a);
+	t1 = (-b + sqrt(discriminant)) / (2.0 * a);
+	if (t0 > 1e-6)
+	{
+		*t = t0;
+		return (1);
+	}
+	if (t1 > 1e-6)
+	{
+		*t = t1;
+		return (1);
+	}
+	return (0);
+}
+
+/*
+Vector Calculation:
+oc is the vector from the ray's origin to the sphere's center.
+a, b, and c are coefficients for the quadratic equation derived
+from the ray-sphere intersection formula.
+
+Quadratic Equation:
+The quadratic equation is derived from the geometric equation of a sphere
+and the parametric equation of a ray.
+The discriminant (b^2 - 4ac) determines the nature of the intersection:
+If the discriminant is negative, there are no real roots,
+meaning the ray does not intersect the sphere.
+If the discriminant is zero or positive, there are one or two real roots,
+indicating potential intersection points.
+
+Intersection Points:
+The function intersect_sphere_solutions calculates the potential intersection
+points (t0 and t1).
+It checks if these points are valid (greater than a small epsilon to avoid
+floating-point precision issues).
+
+Return Value:
+The function returns 1 if there is a valid intersection and 0 otherwise.
+The intersection point is stored in the variable pointed to by t.
+*/
+int	intersect_sphere(t_ray ray, t_sphere sphere, float *t)
+{
+	t_vector	oc;
+	float		a;
+	float		b;
+	float		c;
+	float		discriminant;
+
+	oc = vector_subtract(ray.origin, sphere.position);
+	a = vector_dot(ray.direction, ray.direction);
+	b = 2.0 * vector_dot(oc, ray.direction);
+	c = vector_dot(oc, oc) - (sphere.diameter / 2)
+		* (sphere.diameter / 2);
+	discriminant = b * b - 4 * a * c;
+	if (discriminant < 0)
+		return (0);
+	return (intersect_sphere_solutions(a, b, discriminant, t));
+}
+
+/*
+the quadratic equation for the intersection of a ray with a cylinder can be
+derived from the geometric properties of the cylinder and the ray.
+[ at^2 + bt + c = 0 ]
+Where:
+(a),(b),and(c) are coefficients that depend on the ray and cylinder parameters.
+( t ) is the parameter along the ray direction.
+
+Parallel Check:
+The function checks if the absolute value of the denominator is greater than
+a small epsilon value (1e-6). This check ensures that the ray is not parallel
+to the plane. If the ray is parallel, the function returns 0, no intersection.
+
+Vector Calculation:
+If the ray is not parallel, the function calculates the vector from the
+plane's position to the ray's origin.
+
+Intersection Point Calculation:
+The intersection point t is calculated using the plane equation.
+The dot product of plane_to_ray_origin and the plane's normal vector
+is divided by the denominator.
+
+Intersection Validity:
+The function checks if the calculated intersection point t is greater than
+or equal to 0. If it is, the function returns 1 indicating a valid intersection
+in front of the ray's origin. Otherwise, it returns 0.
+
+Return Value:
+The function returns 1 if there is a valid intersection and 0 otherwise.
+The intersection point is stored in the variable pointed to by t.
+*/
+int	intersect_plane(t_ray ray, t_plane plane, float *t)
+{
+	float		denominator;
+	t_vector	plane_to_ray_origin;
+
+	denominator = vector_dot(vector_normalise(plane.normal_vec),
+			ray.direction);
+	if (fabs(denominator) > 1e-6)
+	{
+		plane_to_ray_origin = vector_subtract(plane.position, ray.origin);
+		*t = vector_dot(plane_to_ray_origin, plane.normal_vec)
+			/ denominator;
+		return (*t >= 0);
+	}
+	return (0);
+}
+
+t_colour	calculate_hit_colour(t_mrt *scene, t_hit *hit_data,
+	t_vector light_dir)
+{
+	if (hit_data->closest_sphere)
+		return (calculate_sphere_colour(scene, hit_data, light_dir));
+	if (hit_data->closest_plane)
+		return (calculate_plane_colour(scene, hit_data, light_dir));
+	if (hit_data->closest_cylinder)
+		return (calculate_cylinder_colour(scene, hit_data, light_dir));
+	return (calculate_ambient_colour(scene));
+}
+
+t_colour	calculate_sphere_colour(t_mrt *scene, t_hit *hit_data,
+	t_vector light_dir)
+{
+	t_vector	normal;
+	t_colour	colour;
+	float		diff;
+
+	normal = calculate_normal_sphere(hit_data->hit_point,
+			hit_data->closest_sphere);
+	diff = fmax(0.0, vector_dot(normal, light_dir));
+	colour = calculate_diffuse(hit_data->closest_sphere->colour, diff, scene);
+	return (colour);
+}
+
+t_colour	calculate_plane_colour(t_mrt *scene, t_hit *hit_data,
+	t_vector light_dir)
+{
+	t_vector	normal;
+	t_colour	colour;
+	float		diff;
+
+	normal = calculate_normal_plane(hit_data->closest_plane);
+	diff = fmax(0.0, vector_dot(normal, light_dir));
+	colour = calculate_diffuse(hit_data->closest_plane->colour, diff, scene);
+	return (colour);
+}
+
+t_colour	calculate_cylinder_colour(t_mrt *scene, t_hit *hit_data,
+	t_vector light_dir)
+{
+	t_vector	normal;
+	t_colour	colour;
+	float		diff;
+
+	normal = calculate_normal_cylinder(hit_data->hit_point,
+			hit_data->closest_cylinder);
+	diff = fmax(0.0, vector_dot(normal, light_dir));
+	colour = calculate_diffuse(hit_data->closest_cylinder->colour,
+			diff, scene);
+	return (colour);
+}
+
+t_colour	calculate_ambient_colour(t_mrt *scene)
+{
+	t_colour	colour;
+
+	colour.r = fmin(255, fmax(0, (int)(scene->ambient.colour.r
+					* scene->ambient.ratio)));
+	colour.g = fmin(255, fmax(0, (int)(scene->ambient.colour.g
+					* scene->ambient.ratio)));
+	colour.b = fmin(255, fmax(0, (int)(scene->ambient.colour.b
+					* scene->ambient.ratio)));
+	return (colour);
+}
+t_vector	calculate_hit_point(t_ray ray, float t)
+{
+	t_vector	result;
+
+	result = vector_add(ray.origin, vector_scale(ray.direction, t));
+	return (result);
+}
+
+t_vector	calculate_normal_sphere(t_vector hit_point, t_sphere *sphere)
+{
+	t_vector	result;
+
+	result = vector_normalise(vector_subtract(hit_point, sphere->position));
+	return (result);
+}
+
+t_vector	calculate_normal_plane(t_plane *plane)
+{
+	t_vector	result;
+
+	result = vector_normalise(plane->normal_vec);
+	return (result);
+}
+
+t_vector	calculate_normal_cylinder(t_vector hit_point, t_cylinder *cylinder)
+{
+	t_vector	to_hit;
+	t_vector	axis_normal;
+	t_vector	normal;
+
+	to_hit = vector_subtract(hit_point, cylinder->position);
+	axis_normal = vector_scale(cylinder->axis, vector_dot(to_hit,
+				cylinder->axis));
+	normal = vector_subtract(to_hit, axis_normal);
+	return (vector_normalise(normal));
+}
+
+t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene)
+{
+	t_colour	diffuse_colour;
+
+	diffuse_colour.r = fmin(255, fmax(0, (int)(obj_colour.r * diff
+					* scene->light.brightness + scene->ambient.colour.r
+					* scene->ambient.ratio)));
+	diffuse_colour.g = fmin(255, fmax(0, (int)(obj_colour.g * diff
+					* scene->light.brightness + scene->ambient.colour.g
+					* scene->ambient.ratio)));
+	diffuse_colour.b = fmin(255, fmax(0, (int)(obj_colour.b * diff
+					* scene->light.brightness + scene->ambient.colour.b
+					* scene->ambient.ratio)));
+	return (diffuse_colour);
+}
+
+/*
+- Finds the closest object that the ray intersects in the scene and stores
+the hit information in hit_data.
+- Calculates the direction from the hit point to the light source by
+subtracting the hit point from the light's position.
+- Calculates the color at the hit point.
+*/
+t_colour	ray_trace(t_ray ray, t_mrt *scene)
+{
+	t_hit		hit_data;
+	t_vector	light_dir;
+	t_colour	colour;
+
+	init_hit_data(&hit_data);
+	find_closest_objects(ray, scene, &hit_data);
+	light_dir = vector_normalise(vector_subtract(
+				scene->light.position, hit_data.hit_point));
+	colour = calculate_hit_colour(scene, &hit_data, light_dir);
+	return (colour);
+}
+
+/*
+Calculate the Memory Address of the Pixel:
+img->addr is the base address of the image's pixel data.
+y * img->line_length calculates the offset to the start of the row.
+x * (img->bits_per_pixel / 8) calculates the offset to the specific pixel
+	within the row.
+Adding these offsets to img->addr gives the address of the pixel (dst).
+
+Set the Pixel Color:
+The color is set by combining the red, green, and blue components.
+(colour.r << 16) shifts the red component to the highest byte.
+(colour.g << 8) shifts the green component to the middle byte.
+colour.b remains in the lowest byte.
+The combined value is then stored at the calculated address (dst).
+
+Example:
+Assume:
+img->addr points to the start of the pixel data.
+img->line_length is 800 bytes
+(for an image width of 200 pixels and 32 bits per pixel).
+img->bits_per_pixel is 32 (4 bytes per pixel).
+To set the pixel at coordinates (10, 20) 
+to a color with RGB values (255, 0, 0) (red):
+
+Calculate the address:
+y * img->line_length = 20 * 800 = 16000
+x * (img->bits_per_pixel / 8) = 10 * 4 = 40
+dst = img->addr + 16000 + 40 = img->addr + 16040
+
+Set the color:
+colour.r = 255, colour.g = 0, colour.b = 0
+Combined color value: (255 << 16) | (0 << 8) | 0 = 0xFF0000
+Store 0xFF0000 at img->addr + 16040.
+*/
+void	put_pixel(t_img *img, int x, int y, t_colour colour)
+{
+	char	*dst;
+
+	dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
+	*(unsigned int *)dst = (colour.r << 16) | (colour.g << 8) | colour.b;
+}
+
+/*
+** render_pixel **
+function calculates the ray for each pixel, traces it through the scene,
+and determines the color to be displayed
+
+** Camera FOV**
+The camera's FOV determines how wide the camera's view is. (Full angle)
+	fov * M_PI / 180.0 converts the FOV from degrees to radians
+	Half-Angle Calculation: * 0.5
+The tangent of the half-angle is used to scale the ray directions so that
+they correctly represent the camera's perspective.
+The fov_scale is used to adjust the direction of the rays cast from the camera
+through each pixel. It ensures that the rays spread out correctly according to
+the camera's field of view.
+
+** Ray Direction **
+Normalise the camera's orientation to get the forward direction
+Check if the forward vector is pointing along the y-axis (up or down)
+If the camera is looking directly up or down, use the z-axis as the "up" vector
+Otherwise, use the regular world up vector
+Calculate the right vector (perpendicular to forward and world_up)
+The up vector is recalculated as the cross product of right and forward
+Calculate screen space coordinates (u, v)
+Calculate the ray direction by adding the scaled components of
+	forward, right, and up
+*/
+void	render_pixel(t_mrt *mrt, int x, int y)
+{
+	t_ray			ray;
+	t_colour		colour;
+	t_camera_basis	basis;
+
+	basis.forward = vector_normalise(mrt->camera.orientation);
+	calculate_camera_basis(basis.forward, &basis);
+	ray = generate_ray(mrt, x, y, basis);
+	colour = ray_trace(ray, mrt);
+	put_pixel(&mrt->mlx.img, x, y, colour);
+}
+
+void	mrt_render(t_mrt *mrt)
+{
+	int		x;
+	int		y;
+
+	printf("Rendering...\n");
+	mrt->camera.aspect_ratio = (float)W_WIDTH / (float)W_HEIGHT;
+	mrt->camera.scale = tan(mrt->camera.fov * 0.5 * M_PI / 180.0);
+	y = 0;
+	while (y < W_HEIGHT)
+	{
+		x = 0;
+		while (x < W_WIDTH)
+		{
+			render_pixel(mrt, x, y);
+			x++;
+		}
+		y++;
+	}
+	mlx_put_image_to_window(mrt->mlx.ptr, mrt->mlx.win, mrt->mlx.img.img, 0, 0);
+}
+
+/*
+*** Light management: spot brightness, hard shadows, ambiance lighting (objects are
+never completely in the dark). must implement Ambient and diffuse lighting.
+
+
+Lighting in the real world is extremely complicated and depends on way too many factors, something we can't afford to calculate on the limited processing power we have. Lighting in OpenGL is therefore based on approximations of reality using simplified models that are much easier to process and look relatively similar. These lighting models are based on the physics of light as we understand it. One of those models is called the Phong lighting model. The major building blocks of the Phong lighting model consist of 3 components: ambient, diffuse and specular lighting. Below you can see what these lighting components look like on their own and combined:
+
+Ambient lighting: even when it is dark there is usually still some light somewhere in the world (the moon, a distant light) so objects are almost never completely dark. To simulate this we use an ambient lighting constant that always gives the object some color.
+Diffuse lighting: simulates the directional impact a light object has on an object. This is the most visually significant component of the lighting model. The more a part of an object faces the light source, the brighter it becomes.
+Specular lighting: simulates the bright spot of a light that appears on shiny objects. Specular highlights are more inclined to the color of the light than the color of the object.
+
+Ambient lighting
+Light usually does not come from a single light source, but from many light sources scattered all around us, even when they're not immediately visible. One of the properties of light is that it can scatter and bounce in many directions, reaching spots that aren't directly visible; light can thus reflect on other surfaces and have an indirect impact on the lighting of an object. Algorithms that take this into consideration are called global illumination algorithms, but these are complicated and expensive to calculate.
+Since we're not big fans of complicated and expensive algorithms we'll start by using a very simplistic model of global illumination, namely ambient lighting. As you've seen in the previous section we use a small constant (light) color that we add to the final resulting color of the object's fragments, thus making it look like there is always some scattered light even when there's not a direct light source.
+Adding ambient lighting to the scene is really easy. We take the light's color, multiply it with a small constant ambient factor, multiply this with the object's color, and use that as the fragment's color in the cube object's shader
+
+Diffuse lighting
+Ambient lighting by itself doesn't produce the most interesting results, but diffuse lighting however will start to give a significant visual impact on the object. Diffuse lighting gives the object more brightness the closer its fragments are aligned to the light rays from a light source.
+*/
+
+Color calculate_lighting(t_ray ray, t_hit *hit_data, t_light light, t_ambient ambient) {
+    // Step 1: Ambient lighting
+    Color ambient_component = ambient.color * ambient.intensity;
+
+    // Step 2: Diffuse lighting (Lambertian reflectance)
+    Vector normal = hit_data->normal;  // Surface normal at the intersection point
+    Vector light_dir = normalize(light.position - hit_data->hit_point); // Light direction
+    float diffuse_intensity = max(0, dot_product(normal, light_dir)) * light.intensity;
+    Color diffuse_component = light.color * diffuse_intensity;
+
+    // Step 3: Combine ambient and diffuse components
+    Color final_color = hit_data->object_color * (ambient_component + diffuse_component);
+
+    // (Optional) Step 4: Specular highlights can be added here for shiny surfaces
+
+    return final_color;
+}
+
+// Function to calculate color for the scene with ambient and diffuse lighting
+Color calculate_scene_color(t_ray ray, t_mrt *scene, t_hit *hit_data, t_light light, t_ambient ambient) {
+    find_closest_objects(ray, scene, hit_data);  // Find closest object intersection
+
+    if (hit_data->closest_object != NULL) {
+        // Calculate lighting for the hit point
+        return calculate_lighting(ray, hit_data, light, ambient);
+    } else {
+        // If no object is hit, return the background color
+        return scene->background_color;
+    }
+}
+
+// Example of calling the lighting function inside the ray-tracing loop
+void render_scene(t_mrt *scene) {
+    int x, y;
+    t_ray ray;
+    t_hit hit_data;
+    t_light light = scene->light;
+    t_ambient ambient = scene->ambient;
+
+    for (y = 0; y < scene->height; y++) {
+        for (x = 0; x < scene->width; x++) {
+            ray = generate_ray(scene->camera, x, y);  // Generate ray for each pixel
+            Color color = calculate_scene_color(ray, scene, &hit_data, light, ambient);
+            set_pixel(scene, x, y, color);  // Set pixel color based on the calculated lighting
+        }
+    }
+}

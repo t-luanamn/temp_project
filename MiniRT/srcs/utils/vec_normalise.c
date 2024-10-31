@@ -12,6 +12,11 @@
 
 #include "mrt.h"
 
+float	vector_length(t_vector v)
+{
+	return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
 /*
 The vector_normalise function normalises a given vector.
 Normalising a vectormeans scaling it to have a length (or magnitude) of 1
@@ -23,7 +28,7 @@ t_vector	vector_normalise(t_vector v)
 	float		length;
 	t_vector	normalised_vector;
 
-	length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	length = vector_length(v);
 	normalised_vector.x = v.x / length;
 	normalised_vector.y = v.y / length;
 	normalised_vector.z = v.z / length;

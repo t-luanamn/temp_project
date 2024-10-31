@@ -51,16 +51,15 @@ t_vector	calculate_normal_cylinder(t_vector hit_point, t_cylinder *cylinder)
 
 t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene)
 {
-	t_colour	diffuse_colour;
+    t_colour	colour;
+    float		min_ambient = 0.2;
 
-	diffuse_colour.r = fmin(255, fmax(0, (int)(obj_colour.r * diff
-					* scene->light.brightness + scene->ambient.colour.r
-					* scene->ambient.ratio)));
-	diffuse_colour.g = fmin(255, fmax(0, (int)(obj_colour.g * diff
-					* scene->light.brightness + scene->ambient.colour.g
-					* scene->ambient.ratio)));
-	diffuse_colour.b = fmin(255, fmax(0, (int)(obj_colour.b * diff
-					* scene->light.brightness + scene->ambient.colour.b
-					* scene->ambient.ratio)));
-	return (diffuse_colour);
+    colour.r = obj_colour.r * (diff + min_ambient * scene->ambient.ratio) * scene->light.brightness;;
+    colour.g = obj_colour.g * (diff + min_ambient * scene->ambient.ratio) * scene->light.brightness;;
+    colour.b = obj_colour.b * (diff + min_ambient * scene->ambient.ratio) * scene->light.brightness;;
+    colour.r = fmin(255, fmax(0, colour.r));
+    colour.g = fmin(255, fmax(0, colour.g));
+    colour.b = fmin(255, fmax(0, colour.b));
+
+    return colour;
 }

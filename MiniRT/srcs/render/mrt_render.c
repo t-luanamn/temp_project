@@ -19,18 +19,18 @@ the hit information in hit_data.
 subtracting the hit point from the light's position.
 - Calculates the color at the hit point.
 */
-t_colour	ray_trace(t_ray ray, t_mrt *scene)
+t_colour ray_trace(t_ray ray, t_mrt *scene)
 {
-	t_hit		hit_data;
-	t_vector	light_dir;
-	t_colour	colour;
+    t_hit hit_data;
+    t_vector light_dir;
 
-	init_hit_data(&hit_data);
-	find_closest_objects(ray, scene, &hit_data);
-	light_dir = vector_normalise(vector_subtract(
-				scene->light.position, hit_data.hit_point));
-	colour = calculate_hit_colour(scene, &hit_data, light_dir);
-	return (colour);
+    init_hit_data(&hit_data);
+    find_closest_objects(ray, scene, &hit_data);
+    if (hit_data.closest_t == INFINITY)
+        return (t_colour){0, 0, 0};
+    light_dir = vector_normalise(vector_subtract(
+							scene->light.position, hit_data.hit_point));
+    return calculate_hit_colour(scene, &hit_data, light_dir);
 }
 
 /*

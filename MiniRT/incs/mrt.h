@@ -84,6 +84,7 @@ t_vector	vector_scale(t_vector v, float scalar);
 float		vector_dot(t_vector v1, t_vector v2);
 t_vector	vector_cross(t_vector v1, t_vector v2);
 t_vector	vector_normalise(t_vector v);
+float		vector_length(t_vector v);
 
 // Print values
 void		print_mrt(t_mrt *mrt);
