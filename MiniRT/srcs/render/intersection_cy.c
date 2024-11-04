@@ -35,9 +35,9 @@ int	intersect_cylinder_solutions(t_ray ray, t_cylinder cylinder,
 	base_to_hit[0] = vector_subtract(hit_point[0], cylinder.position);
 	base_to_hit[1] = vector_subtract(hit_point[1], cylinder.position);
 	height[0] = vector_dot(
-			base_to_hit[0], vector_normalise(cylinder.axis));
+			base_to_hit[0], normalise(cylinder.axis));
 	height[1] = vector_dot(
-			base_to_hit[1], vector_normalise(cylinder.axis));
+			base_to_hit[1], normalise(cylinder.axis));
 	if (check_cylinder_height(height[0], cylinder.height, t_vals[0], t))
 		return (1);
 	if (check_cylinder_height(height[1], cylinder.height, t_vals[1], t))
@@ -52,7 +52,7 @@ void	compute_ray_cylinder_vectors(t_ray ray, t_cylinder cylinder,
 	t_vector	oc;
 
 	oc = vector_subtract(ray.origin, cylinder.position);
-	axis = vector_normalise(cylinder.axis);
+	axis = normalise(cylinder.axis);
 	*d = vector_subtract(ray.direction, vector_scale(axis,
 				vector_dot(ray.direction, axis)));
 	*o = vector_subtract(oc, vector_scale(axis, vector_dot(oc, axis)));

@@ -14,16 +14,16 @@
 
 float	vector_length(t_vector v)
 {
-	return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	return (sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
 }
 
 /*
-The vector_normalise function normalises a given vector.
+The normalise function normalises a given vector.
 Normalising a vectormeans scaling it to have a length (or magnitude) of 1
 while maintaining its direction. This is useful in many applications,
 such as computer graphics, where unit vectors are often required.
 */
-t_vector	vector_normalise(t_vector v)
+t_vector	normalise(t_vector v)
 {
 	float		length;
 	t_vector	normalised_vector;

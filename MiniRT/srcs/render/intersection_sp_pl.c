@@ -116,7 +116,7 @@ int	intersect_plane(t_ray ray, t_plane plane, float *t)
 	float		denominator;
 	t_vector	plane_to_ray_origin;
 
-	denominator = vector_dot(vector_normalise(plane.normal_vec),
+	denominator = vector_dot(normalise(plane.normal_vec),
 			ray.direction);
 	if (fabs(denominator) > 1e-6)
 	{

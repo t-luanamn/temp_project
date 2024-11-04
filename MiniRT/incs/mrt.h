@@ -83,7 +83,7 @@ t_vector	vector_subtract(t_vector v1, t_vector v2);
 t_vector	vector_scale(t_vector v, float scalar);
 float		vector_dot(t_vector v1, t_vector v2);
 t_vector	vector_cross(t_vector v1, t_vector v2);
-t_vector	vector_normalise(t_vector v);
+t_vector	normalise(t_vector v);
 float		vector_length(t_vector v);
 
 // Print values
@@ -136,16 +136,14 @@ void		find_closest_plane(t_ray ray, t_mrt *scene, float *closest_t,
 void		find_closest_cylinder(t_ray ray, t_mrt *scene, float *closest_t,
 				t_cylinder **closest_cylinder);
 
-t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene);
-t_colour	calculate_diffuse(t_colour obj_colour, float diff, t_mrt *scene);
+float		calculate_diffuse(float diff, t_mrt *scene);
+void		add_ambient_light(t_mrt *scene, t_colour *colour);
+void		apply_shadow(t_mrt *scene, t_hit *hit_data, t_ray light_ray,
+				t_colour *colour);
+float		calculate_specular(t_vector light_dir, t_vector view_dir,
+				t_vector normal, t_mrt *scene);
 t_colour	calculate_hit_colour(t_mrt *scene, t_hit *hit_data,
 				t_vector light_dir);
-t_colour	calculate_sphere_colour(t_mrt *scene, t_hit *hit_data,
-				t_vector light_dir);
-t_colour	calculate_plane_colour(t_mrt *scene, t_hit *hit_data,
-				t_vector light_dir);
-t_colour	calculate_cylinder_colour(t_mrt *scene, t_hit *hit_data,
-				t_vector light_dir);
-t_colour	calculate_ambient_colour(t_mrt *scene);
+t_colour	blend(float diffuse, float specular, t_colour obj_colour);
 
 #endif

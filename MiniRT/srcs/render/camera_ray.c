@@ -26,7 +26,7 @@ void	calculate_camera_basis(t_vector forward, t_camera_basis *basis)
 
 	world_up = calculate_world_up(forward);
 	basis->right = vector_cross(forward, world_up);
-	basis->right = vector_normalise(basis->right);
+	basis->right = normalise(basis->right);
 	basis->up = vector_cross(basis->right, forward);
 	basis->forward = forward;
 }
@@ -41,7 +41,7 @@ t_ray	generate_ray(t_mrt *mrt, int x, int y, t_camera_basis basis)
 		* mrt->camera.aspect_ratio * mrt->camera.scale;
 	v = (1.0f - 2.0f * ((float)y + 0.5f) / (float)W_HEIGHT) * mrt->camera.scale;
 	ray.origin = mrt->camera.view_point;
-	ray.direction = vector_normalise(vector_add(
+	ray.direction = normalise(vector_add(
 				vector_add(vector_scale(basis.right, u),
 					vector_scale(basis.up, v)),
 				basis.forward));
