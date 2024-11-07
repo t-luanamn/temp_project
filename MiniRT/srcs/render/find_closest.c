@@ -28,12 +28,12 @@ closest object and calculates the hit point.
 */
 void	find_closest_objects(t_ray ray, t_mrt *scene, t_hit *hit_data)
 {
-	find_closest_sphere(ray, scene, &hit_data->closest_t,
-		&hit_data->closest_sphere);
 	find_closest_cylinder(ray, scene, &hit_data->closest_t,
 		&hit_data->closest_cylinder);
 	find_closest_plane(ray, scene, &hit_data->closest_t,
 		&hit_data->closest_plane);
+	find_closest_sphere(ray, scene, &hit_data->closest_t,
+		&hit_data->closest_sphere);
 	hit_data->hit_point = calculate_hit_point(ray, hit_data->closest_t);
 }
 

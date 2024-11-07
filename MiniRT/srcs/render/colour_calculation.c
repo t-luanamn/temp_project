@@ -32,40 +32,75 @@ void	apply_shadow(t_mrt *scene, t_hit *hit_data, t_ray light_ray,
 	}
 }
 
+t_colour	calculate_sphere_colour(t_mrt *scene, t_hit *hit_data,
+	t_vector light_dir, t_vector view_dir)
+{
+	t_colour	colour;
+	t_vector	normal;
+	float		diffuse;
+	float		specular;
+
+	normal = calculate_normal_sphere(
+			hit_data->hit_point, hit_data->closest_sphere);
+	diffuse = calculate_diffuse(
+			fmax(0.1, vector_dot(normal, light_dir)), scene);
+	specular = calculate_specular(light_dir, view_dir, normal, scene);
+	colour = blend(diffuse, specular, hit_data->closest_sphere->colour);
+	return (colour);
+}
+
+t_colour	calculate_plane_colour(t_mrt *scene, t_hit *hit_data,
+	t_vector light_dir, t_vector view_dir)
+{
+	t_colour	colour;
+	t_vector	normal;
+	float		diffuse;
+	float		specular;
+
+	normal = calculate_normal_plane(hit_data->closest_plane);
+	diffuse = calculate_diffuse(
+			fmax(0.125, vector_dot(normal, light_dir)), scene);
+	specular = calculate_specular(light_dir, view_dir, normal, scene);
+	colour = blend(diffuse, specular, hit_data->closest_plane->colour);
+	return (colour);
+}
+
+t_colour	calculate_cylinder_colour(t_mrt *scene, t_hit *hit_data,
+	t_vector light_dir, t_vector view_dir)
+{
+	t_colour	colour;
+	t_vector	normal;
+	float		diffuse;
+	float		specular;
+
+	normal = calculate_normal_cylinder(
+			hit_data->hit_point, hit_data->closest_cylinder);
+	diffuse = calculate_diffuse(
+			fmax(0.125, vector_dot(normal, light_dir)), scene);
+	specular = calculate_specular(light_dir, view_dir, normal, scene);
+	colour = blend(diffuse, specular, hit_data->closest_cylinder->colour);
+	return (colour);
+}
+
 t_colour	calculate_hit_colour(t_mrt *scene, t_hit *hit_data,
 	t_vector light_dir)
 {
 	t_colour	colour;
 	t_vector	view_dir;
-	float		diffuse;
-	float		specular;
-	t_vector	normal;
 
-	view_dir = normalise(vector_subtract(scene->camera.view_point, hit_data->hit_point));
+	view_dir = normalise(vector_subtract(
+				scene->camera.view_point, hit_data->hit_point));
 	if (hit_data->closest_sphere)
-	{
-		normal = calculate_normal_sphere(hit_data->hit_point, hit_data->closest_sphere);
-		diffuse = calculate_diffuse(fmax(0.1, vector_dot(normal, light_dir)), scene);
-		specular = calculate_specular(light_dir, view_dir, normal, scene);
-		colour = blend(diffuse, specular, hit_data->closest_sphere->colour);
-	}
+		colour = calculate_sphere_colour(scene, hit_data, light_dir, view_dir);
 	else if (hit_data->closest_plane)
-	{
-		normal = calculate_normal_plane(hit_data->closest_plane);
-		diffuse = calculate_diffuse(fmax(0.125, vector_dot(normal, light_dir)), scene);
-		specular = calculate_specular(light_dir, view_dir, normal, scene);
-		colour = blend(diffuse, specular, hit_data->closest_plane->colour);
-	}
+		colour = calculate_plane_colour(scene, hit_data, light_dir, view_dir);
 	else if (hit_data->closest_cylinder)
-	{
-		normal = calculate_normal_cylinder(hit_data->hit_point, hit_data->closest_cylinder);
-		diffuse = calculate_diffuse(fmax(0.125, vector_dot(normal, light_dir)), scene);
-		specular = calculate_specular(light_dir, view_dir, normal, scene);
-		colour = blend(diffuse, specular, hit_data->closest_cylinder->colour);
-	}
+		colour = calculate_cylinder_colour(
+				scene, hit_data, light_dir, view_dir);
 	else
 		return ((t_colour){0, 0, 0});
-	apply_shadow(scene, hit_data, (t_ray){hit_data->hit_point, light_dir}, &colour);
+	apply_shadow(
+		scene, hit_data, (t_ray){hit_data->hit_point, light_dir}, &colour);
 	add_ambient_light(scene, &colour);
 	return (colour);
 }
