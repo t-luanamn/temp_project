@@ -18,6 +18,64 @@ void	init_hit_data(t_hit *hit_data)
 	hit_data->closest_sphere = NULL;
 	hit_data->closest_plane = NULL;
 	hit_data->closest_cylinder = NULL;
+	hit_data->closest_obj = OBJECT_NONE;
+}
+
+void	find_closest_sphere(t_ray ray, t_mrt *scene, t_hit *hit_data)
+{
+	int		i;
+	float	t;
+
+	i = 0;
+	while (i < scene->num_spheres)
+	{
+		if (intersect_sphere(ray, scene->spheres[i], &t)
+			&& t < hit_data->closest_t)
+		{
+			hit_data->closest_t = t;
+			hit_data->closest_sphere = &scene->spheres[i];
+			hit_data->closest_obj = OBJECT_SPHERE;
+		}
+		i++;
+	}
+}
+
+void	find_closest_plane(t_ray ray, t_mrt *scene, t_hit *hit_data)
+{
+	int		i;
+	float	t;
+
+	i = 0;
+	while (i < scene->num_planes)
+	{
+		if (intersect_plane(ray, scene->planes[i], &t)
+			&& t < hit_data->closest_t)
+		{
+			hit_data->closest_t = t;
+			hit_data->closest_plane = &scene->planes[i];
+			hit_data->closest_obj = OBJECT_PLANE;
+		}
+		i++;
+	}
+}
+
+void	find_closest_cylinder(t_ray ray, t_mrt *scene, t_hit *hit_data)
+{
+	int		i;
+	float	t;
+
+	i = 0;
+	while (i < scene->num_cylinders)
+	{
+		if (intersect_cylinder(ray, scene->cylinders[i], &t)
+			&& t < hit_data->closest_t)
+		{
+			hit_data->closest_t = t;
+			hit_data->closest_cylinder = &scene->cylinders[i];
+			hit_data->closest_obj = OBJECT_CYLINDER;
+		}
+		i++;
+	}
 }
 
 /*
@@ -28,65 +86,8 @@ closest object and calculates the hit point.
 */
 void	find_closest_objects(t_ray ray, t_mrt *scene, t_hit *hit_data)
 {
-	find_closest_cylinder(ray, scene, &hit_data->closest_t,
-		&hit_data->closest_cylinder);
-	find_closest_plane(ray, scene, &hit_data->closest_t,
-		&hit_data->closest_plane);
-	find_closest_sphere(ray, scene, &hit_data->closest_t,
-		&hit_data->closest_sphere);
+	find_closest_cylinder(ray, scene, hit_data);
+	find_closest_plane(ray, scene, hit_data);
+	find_closest_sphere(ray, scene, hit_data);
 	hit_data->hit_point = calculate_hit_point(ray, hit_data->closest_t);
-}
-
-void	find_closest_sphere(t_ray ray, t_mrt *scene, float *closest_t,
-	t_sphere **closest_sphere)
-{
-	int		i;
-	float	t;
-
-	i = 0;
-	while (i < scene->num_spheres)
-	{
-		if (intersect_sphere(ray, scene->spheres[i], &t) && t < *closest_t)
-		{
-			*closest_t = t;
-			*closest_sphere = &scene->spheres[i];
-		}
-		i++;
-	}
-}
-
-void	find_closest_plane(t_ray ray, t_mrt *scene, float *closest_t,
-	t_plane **closest_plane)
-{
-	int		i;
-	float	t;
-
-	i = 0;
-	while (i < scene->num_planes)
-	{
-		if (intersect_plane(ray, scene->planes[i], &t) && t < *closest_t)
-		{
-			*closest_t = t;
-			*closest_plane = &scene->planes[i];
-		}
-		i++;
-	}
-}
-
-void	find_closest_cylinder(t_ray ray, t_mrt *scene, float *closest_t,
-	t_cylinder **closest_cylinder)
-{
-	int		i;
-	float	t;
-
-	i = 0;
-	while (i < scene->num_cylinders)
-	{
-		if (intersect_cylinder(ray, scene->cylinders[i], &t) && t < *closest_t)
-		{
-			*closest_t = t;
-			*closest_cylinder = &scene->cylinders[i];
-		}
-		i++;
-	}
 }

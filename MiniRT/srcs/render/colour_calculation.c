@@ -3,32 +3,44 @@
 /*                                                        :::      ::::::::   */
 /*   colour_calculation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tluanamn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tytang <tytang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 21:01:20 by tluanamn          #+#    #+#             */
-/*   Updated: 2024/10/05 21:01:22 by tluanamn         ###   ########.fr       */
+/*   Updated: 2024/11/08 15:39:10 by tytang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "mrt.h"
 
+/*
+- Ensure the shadow ray does not incorrectly identify objects
+- Check if the shadow ray is correctly oriented
+	with respect to the surface normal
+*/
 void	apply_shadow(t_mrt *scene, t_hit *hit_data, t_ray light_ray,
 	t_colour *colour)
 {
-	t_ray	shadow_ray;
-	t_hit	shadow_hit;
+	t_ray		shadow_ray;
+	t_hit		shadow_hit;
+	t_vector	normal;
+	float		light_distance;
 
 	init_hit_data(&shadow_hit);
 	shadow_ray.origin = vector_add(hit_data->hit_point,
-			vector_scale(light_ray.direction, 0.0001f));
+			vector_scale(light_ray.direction, 0.001f));
 	shadow_ray.direction = light_ray.direction;
 	find_closest_objects(shadow_ray, scene, &shadow_hit);
-	if (shadow_hit.closest_t < vector_length(vector_subtract(
-				scene->light.position, hit_data->hit_point)))
+	light_distance = vector_length(vector_subtract(
+				scene->light.position, hit_data->hit_point));
+	if (shadow_hit.closest_t < light_distance && shadow_hit.closest_t > 0.001f)
 	{
-		colour->r *= 0.5;
-		colour->g *= 0.5;
-		colour->b *= 0.5;
+		normal = normalise(hit_data->hit_point);
+		if (vector_dot(normal, light_ray.direction) < 0)
+		{
+			colour->r *= 0.5;
+			colour->g *= 0.5;
+			colour->b *= 0.5;
+		}
 	}
 }
 
@@ -90,11 +102,11 @@ t_colour	calculate_hit_colour(t_mrt *scene, t_hit *hit_data,
 
 	view_dir = normalise(vector_subtract(
 				scene->camera.view_point, hit_data->hit_point));
-	if (hit_data->closest_sphere)
+	if (hit_data->closest_obj == OBJECT_SPHERE)
 		colour = calculate_sphere_colour(scene, hit_data, light_dir, view_dir);
-	else if (hit_data->closest_plane)
+	else if (hit_data->closest_obj == OBJECT_PLANE)
 		colour = calculate_plane_colour(scene, hit_data, light_dir, view_dir);
-	else if (hit_data->closest_cylinder)
+	else if (hit_data->closest_obj == OBJECT_CYLINDER)
 		colour = calculate_cylinder_colour(
 				scene, hit_data, light_dir, view_dir);
 	else

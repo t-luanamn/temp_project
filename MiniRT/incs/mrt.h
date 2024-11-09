@@ -129,12 +129,6 @@ int			intersect_cylinder_solutions(t_ray ray, t_cylinder cylinder,
 				float *t_vals, float *t);
 void		init_hit_data(t_hit *hit_data);
 void		find_closest_objects(t_ray ray, t_mrt *scene, t_hit *hit_data);
-void		find_closest_sphere(t_ray ray, t_mrt *scene, float *closest_t,
-				t_sphere **closest_sphere);
-void		find_closest_plane(t_ray ray, t_mrt *scene, float *closest_t,
-				t_plane **closest_plane);
-void		find_closest_cylinder(t_ray ray, t_mrt *scene, float *closest_t,
-				t_cylinder **closest_cylinder);
 
 float		calculate_diffuse(float diff, t_mrt *scene);
 void		add_ambient_light(t_mrt *scene, t_colour *colour);

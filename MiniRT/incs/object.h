@@ -97,6 +97,13 @@ typedef struct s_ray
 	t_vector	direction;
 }	t_ray;
 
+typedef enum e_type
+{
+	OBJECT_NONE,
+	OBJECT_SPHERE,
+	OBJECT_PLANE,
+	OBJECT_CYLINDER
+}	t_type;
 typedef struct s_hit
 {
 	float		closest_t;
@@ -104,6 +111,7 @@ typedef struct s_hit
 	t_plane		*closest_plane;
 	t_cylinder	*closest_cylinder;
 	t_vector	hit_point;
+	t_type		closest_obj;
 }	t_hit;
 
 #endif
