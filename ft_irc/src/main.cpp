@@ -1,4 +1,4 @@
-#include "inc/Log.hpp"
+#include "../inc/Log.hpp"
 
 int main(void)
 {
