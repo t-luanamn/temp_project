@@ -34,4 +34,10 @@ class Server: public Log
 
 };
 
+
+// Utility functions
+bool isNumber(const std::string& str);
+bool validateInput(int ac, char **av);
+
+
 #endif
