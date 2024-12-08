@@ -30,8 +30,7 @@ void inputHandler(int sock) {
     }
 }
 
-int main()
-{
+int main() {
     int sock = 0;
     struct sockaddr_in serv_addr;
     char buffer[BUFFER_SIZE];
