@@ -8,6 +8,6 @@ int main(int ac, char **av)
     }
 
     Server server = Server(atoi(av[1]), av[2]);
-    server.listen();
+    server.start();
     return 0;
 }
