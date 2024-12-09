@@ -43,7 +43,7 @@ std::vector<Group *> Client::getGroups() const
   return chatgroupList;
 }
 
-Group::Group(const std::string &name) : groupName(name), inviteOnly(false), memberLimit(0)
+Group::Group(const std::string &name) : groupName(name), inviteOnly(false), passwordOn(false), memberLimit(0), memberLimitOn(false), topic(""), topicBool(false), owner(NULL)
 {
 }
 
@@ -54,6 +54,11 @@ Group::~Group()
 std::string Group::getGroupName() const
 {
   return groupName;
+}
+
+void Group::setGroupName(const std::string &name)
+{
+  groupName = name;
 }
 
 void Group::addMember(Client *client)
@@ -81,6 +86,16 @@ bool Group::isOperator(Client *client) const
   return std::find(operatorList.begin(), operatorList.end(), client) != operatorList.end();
 }
 
+void Group::setOwner(Client *client)
+{
+  owner = client;
+}
+
+Client* Group::getOwner() const
+{
+  return owner;
+}
+
 void Group::setInviteOnly(bool inviteOnly)
 {
   this->inviteOnly = inviteOnly;
@@ -101,6 +116,16 @@ std::string Group::getPassword() const
   return password;
 }
 
+void Group::setPasswordOn(bool passwordOn)
+{
+  this->passwordOn = passwordOn;
+}
+
+bool Group::getPasswordOn() const
+{
+  return passwordOn;
+}
+
 void Group::setMemberLimit(int limit)
 {
   memberLimit = limit;
@@ -111,6 +136,16 @@ int Group::getMemberLimit() const
   return memberLimit;
 }
 
+void Group::setMemberLimitOn(bool memberLimitOn)
+{
+  this->memberLimitOn = memberLimitOn;
+}
+
+bool Group::getMemberLimitOn() const
+{
+  return memberLimitOn;
+}
+
 void Group::setTopic(const std::string &topic)
 {
   this->topic = topic;
@@ -119,4 +154,34 @@ void Group::setTopic(const std::string &topic)
 std::string Group::getTopic() const
 {
   return topic;
+}
+
+void Group::setTopicBool(bool topicBool)
+{
+  this->topicBool = topicBool;
+}
+
+bool Group::getTopicBool() const
+{
+  return topicBool;
+}
+
+void Group::addCurrentlySignedIn(Client *client)
+{
+  currentlySignedIn.push_back(client);
+}
+
+std::vector<Client *> Group::getCurrentlySignedIn() const
+{
+  return currentlySignedIn;
+}
+
+std::vector<Client *> Group::getMembersList() const
+{
+  return membersList;
+}
+
+std::vector<Client *> Group::getOperatorList() const
+{
+  return operatorList;
 }

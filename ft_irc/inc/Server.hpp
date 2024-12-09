@@ -7,21 +7,20 @@
 # include <sys/select.h>
 # include <sys/socket.h>
 # include <unistd.h>
-# include <memory>
+# include <vector>
+# include <string>
 # include <sstream>
 # include <cctype>
 
 # include "Log.hpp"
 # include "Client.hpp"
 
-class Server: public Log
+class Server
 {
   public:
-    Server(int port, std::string const &password);
-    ~Server(void);
+    Server(int port, const std::string &password);
+    ~Server();
 
-    // Server
-    //void listen(void);
     void start();
     void print_status() const;
     void find_and_send_to_group(const std::string &src_string);
@@ -39,25 +38,19 @@ class Server: public Log
     void login_to_group(const std::string &src_string, Client *current_client);
     void change_group_topic(const std::string &src_string, Client *current_client);
 
-
   private:
-    const int   _port;
+    int _port;
     std::string _password;
-    //std::string _server_name;
-    //std::string _start_time;
-    //int         _server_socket;
     int serverfd;
     std::vector<Client *> clientList;
     std::vector<Group *> groupList;
 
     void handleMessage(Client *client, const std::string &message);
-
+    Log log;
 };
 
-
 // Utility functions
-bool isNumber(const std::string& str);
+bool isNumber(const std::string &str);
 bool validateInput(int ac, char **av);
-
 
 #endif
