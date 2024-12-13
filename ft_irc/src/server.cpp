@@ -121,9 +121,8 @@ void Server::start()
 
 void Server::handleMessage(Client *client, const std::string &message)
 {
-  (void)client; // Mark as unused
-  (void)message; // Mark as unused
-  // Handle the message received from the client
+    Command command(this);
+    command.execute(client, message);
 }
 
 void Server::print_status() const

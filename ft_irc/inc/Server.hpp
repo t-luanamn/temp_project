@@ -14,6 +14,7 @@
 
 # include "Log.hpp"
 # include "Client.hpp"
+# include "Command.hpp"
 
 class Server
 {
