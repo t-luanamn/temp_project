@@ -40,6 +40,7 @@ class Log
     void nl(const int number, std::string color);
     void nl(const double number, std::string color);
     void nl(const float number, std::string color);
+    void err(const std::string& message);
 };
 
 #endif

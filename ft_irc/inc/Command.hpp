@@ -10,11 +10,12 @@ class Command
 {
   public:
     Command(Server *server);
-    void execute(Client *client, const std::string &message);
+    void execute(Client *client, const std::vector<std::string> &tokens);
 
   private:
     Server *server;
 
+    bool checkPassword(Client *client, const std::string &enteredPassword);
     void setUsername(Client *client, const std::string &message);
     void printStatus(Client *client);
     void sendToUser(Client *client, const std::string &message);

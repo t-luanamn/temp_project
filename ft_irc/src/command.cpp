@@ -1,23 +1,40 @@
 /*
-commands that are specific to channel operators:
-∗ KICK - Eject a client from the channel
-∗ INVITE - Invite a client to a channel
-∗ TOPIC - Change or view the channel topic
-∗ MODE - Change the channel’s mode:
-· i: Set/remove Invite-only channel
-· t: Set/remove the restrictions of the TOPIC command to channel operators
-· k: Set/remove the channel key (password)
-· o: Give/take channel operator privilege
-· l: Set/remove the user limit to channel
+Internet Relay Chat: Client Protocol
+https://datatracker.ietf.org/doc/html/rfc2812
+
+
+The commands described here are used to register a connection with an
+   IRC server as a user as well as to correctly disconnect.
+
+   A "PASS" command is not required for a client connection to be
+   registered, but it MUST precede the latter of the NICK/USER
+   combination (for a user connection) or the SERVICE command (for a
+   service connection). The RECOMMENDED order for a client to register
+   is as follows:
+
+                           1. Pass message
+           2. Nick message                 2. Service message
+           3. User message
+
+   Upon success, the client will receive an RPL_WELCOME (for users) or
+   RPL_YOURESERVICE (for services) message indicating that the
+   connection is now registered and known the to the entire IRC network.
+   The reply message MUST contain the full client identifier upon which
+   it was registered.
 */
 
 #include "../inc/Command.hpp"
 
 Command::Command(Server *server) : server(server) {}
 
-void Command::execute(Client *client, const std::string &message)
+/*
+void Command::execute(Client *client, const std::vector<std::string> &tokens)
 {
-    if (message.compare(0, 12, "Set Username") == 0)
+    if (command == "PASS")
+    {
+        checkPassword(client, password);
+    }
+    else if (message.compare(0, 12, "USER") == 0)
     {
         setUsername(client, message);
     }
@@ -41,7 +58,7 @@ void Command::execute(Client *client, const std::string &message)
     {
         sendToGroup(client, message);
     }
-    else if (message.compare(0, 10, "Join Group") == 0)
+    else if (message.compare(0, 10, "JOIN") == 0)
     {
         joinGroup(client, message);
     }
@@ -66,6 +83,49 @@ void Command::execute(Client *client, const std::string &message)
         std::cout << "message: " << message << std::endl;
     }
 }
+*/
+
+void Command::execute(Client *client, const std::vector<std::string> &tokens)
+{
+  if (tokens.empty())
+  {
+    return;
+  }
+
+  std::string command = tokens[0];
+  if (command == "PASS")
+  {
+    if (tokens.size() > 1)
+    {
+      std::string password;
+      for (size_t i = 1; i < tokens.size(); ++i)
+      {
+        if (i > 1)
+        {
+          password += " ";
+        }
+        password += tokens[i];
+      }
+      checkPassword(client, password);
+    }
+  }
+  else if (command == "USER")
+  {
+    if (tokens.size() > 1)
+    {
+      std::string username = tokens[1];
+      setUsername(client, username);
+    }
+  }
+  else if (command == "STATUS")
+  {
+    printStatus(client);
+  }
+  else
+  {
+    std::cerr << "Unknown command: " << command << std::endl;
+  }
+}
 
 void Command::setUsername(Client *client, const std::string &message)
 {
@@ -83,87 +143,4 @@ void Command::sendToUser(Client *client, const std::string &message)
 {
   (void)client; // Mark the parameter as unused)
   server->send_to_user(message.substr(13));
-}
-
-void Command::createGroup(Client *client, const std::string &message)
-{
-    server->create_group(client, message.substr(13));
-}
-
-void Command::loginToGroup(Client *client, const std::string &message)
-{
-    server->login_to_group(message.substr(15), client);
-}
-
-void Command::sendToGroup(Client *client, const std::string &message)
-{
-    if (server->isClientValidForGroup(client, message.substr(14)))
-    {
-        server->find_and_send_to_group(message.substr(14));
-    }
-}
-
-void Command::joinGroup(Client *client, const std::string &message)
-{
-    if (server->isClientValidForGroup(client, message.substr(11)))
-    {
-        server->join_group(message.substr(11), client);
-    }
-}
-
-void Command::invite(Client *client, const std::string &message)
-{
-    if (server->isClientValidForGroup(client, message.substr(7)))
-    {
-        server->add_to_group(message.substr(7), client);
-    }
-}
-
-void Command::kick(Client *client, const std::string &message)
-{
-    if (server->isClientValidForGroup(client, message.substr(5)))
-    {
-        server->kick_from_group(message.substr(5), client);
-    }
-}
-
-void Command::changeTopic(Client *client, const std::string &message)
-{
-    if (server->isClientValidForGroup(client, message.substr(6)))
-    {
-        server->change_group_topic(message.substr(6), client);
-    }
-}
-
-void Command::setMode(Client *client, const std::string &message)
-{
-    std::string new_temp = message.substr(5);
-    if (server->isClientValidForGroup(client, new_temp))
-    {
-        if (new_temp[0] == 'i')
-        {
-            new_temp = new_temp.substr(2);
-            server->set_remove_invite_only(new_temp, client);
-        }
-        else if (new_temp[0] == 't')
-        {
-            new_temp = new_temp.substr(2);
-            server->set_remove_topic(new_temp, client);
-        }
-        else if (new_temp[0] == 'k')
-        {
-            new_temp = new_temp.substr(2);
-            server->set_channel_password(new_temp, client);
-        }
-        else if (new_temp[0] == 'o')
-        {
-            new_temp = new_temp.substr(2);
-            server->remove_operator_privilege(new_temp, client);
-        }
-        else if (new_temp[0] == 'l')
-        {
-            new_temp = new_temp.substr(2);
-            server->set_user_limit(new_temp, client);
-        }
-    }
 }

@@ -101,6 +101,11 @@ void Log::nl(const float number, std::string color)
 		std::cout << color << number << RESET << std::endl;
 }
 
+void Log::err(const std::string& message)
+{
+    std::cerr << R << message << RESET << std::endl;
+}
+
 /*
 int main(void)
 {

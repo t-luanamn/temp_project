@@ -16,10 +16,12 @@
 # include "Client.hpp"
 # include "Command.hpp"
 
+# define MAX_CLIENTS 5
+# define IP_ADDR "127.0.0.1"
 class Server
 {
   public:
-    Server(int port, const std::string &password);
+    Server(const std::string &name, int port, const std::string &password);
     ~Server();
 
     void start();
@@ -40,13 +42,16 @@ class Server
     void change_group_topic(const std::string &src_string, Client *current_client);
 
   private:
+    std::string _servName;
     int _port;
     std::string _password;
-    int serverfd;
+    int _serverfd;
     std::vector<Client *> clientList;
     std::vector<Group *> groupList;
 
+    void handleClientMessages(fd_set &readfds);
     void handleMessage(Client *client, const std::string &message);
+    std::string sendWelcomeMessage(void);
     Log log;
 };
 
