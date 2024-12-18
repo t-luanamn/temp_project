@@ -3,7 +3,7 @@ Command: TOPIC
    Parameters: <channel> [ <topic> ]
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
 void Command::changeTopic(Client *client, const std::string &message)
 {

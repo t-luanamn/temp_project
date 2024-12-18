@@ -56,7 +56,7 @@ Command: JOIN
                                    on channel #Twilight_zone
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
 void Command::createGroup(Client *client, const std::string &message)
 {

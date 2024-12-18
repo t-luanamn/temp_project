@@ -3,7 +3,7 @@ Command: INVITE
    Parameters: <nickname> <channel>
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
 void Command::invite(Client *client, const std::string &message)
 {

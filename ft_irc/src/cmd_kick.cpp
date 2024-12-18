@@ -17,7 +17,7 @@ Command: KICK
                                    from WiZ to remove John from channel
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
 void Command::kick(Client *client, const std::string &message)
 {

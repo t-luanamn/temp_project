@@ -1,6 +1,7 @@
 #include "../inc/Client.hpp"
 
-Client::Client(int fd) : clientfd(fd), log_in_status(false)
+Client::Client(int fd)
+    : clientfd(fd), log_in_status(false), passReceived(false), nickReceived(false), userReceived(false)
 {
 }
 
@@ -10,38 +11,55 @@ Client::~Client()
 
 int Client::getClientfd() const
 {
-  return clientfd;
-}
-
-void Client::setUsername(const std::string &username)
-{
-  this->username = username;
+    return clientfd;
 }
 
 std::string Client::getUsername() const
 {
-  return username;
+    return username;
 }
 
-void Client::setLoginStatus(bool status)
+void Client::setUsername(const std::string &username)
 {
-  log_in_status = status;
+    this->username = username;
 }
 
-bool Client::getLoginStatus() const
+bool Client::isLoggedIn() const
 {
-  return log_in_status;
+    return log_in_status;
 }
 
-void Client::addGroup(Group *group)
+void Client::setLoggedIn(bool status)
 {
-  chatgroupList.push_back(group);
+    log_in_status = status;
 }
 
 std::vector<Group *> Client::getGroups() const
 {
-  return chatgroupList;
+    return chatgroupList;
 }
+
+void Client::setPassReceived(bool received)
+{
+    passReceived = received;
+}
+
+void Client::setNickReceived(bool received)
+{
+    nickReceived = received;
+}
+
+void Client::setUserReceived(bool received)
+{
+    userReceived = received;
+}
+
+bool Client::isRegistered() const
+{
+    return passReceived && nickReceived && userReceived;
+}
+
+// -----------
 
 Group::Group(const std::string &name) : groupName(name), inviteOnly(false), passwordOn(false), memberLimit(0), memberLimitOn(false), topic(""), topicBool(false), owner(NULL)
 {

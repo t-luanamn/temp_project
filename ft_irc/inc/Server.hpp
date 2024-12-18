@@ -14,7 +14,6 @@
 
 # include "Log.hpp"
 # include "Client.hpp"
-# include "Command.hpp"
 
 # define MAX_CLIENTS 5
 # define IP_ADDR "127.0.0.1"
@@ -25,6 +24,20 @@ class Server
     ~Server();
 
     void start();
+
+  private:
+    std::string _servName;
+    int _port;
+    std::string _password;
+    int _serverfd;
+    std::vector<Client *> clientList;
+    std::vector<Group *> groupList;
+    Log log;
+
+    void handleClientMessages(fd_set &readfds);
+    void handleMessage(Client *client, const std::string &message);
+    std::string sendWelcomeMessage(std::string usr);
+    
     void print_status() const;
     void find_and_send_to_group(const std::string &src_string);
     void join_group(const std::string &targetGroup, Client *client);
@@ -41,18 +54,19 @@ class Server
     void login_to_group(const std::string &src_string, Client *current_client);
     void change_group_topic(const std::string &src_string, Client *current_client);
 
-  private:
-    std::string _servName;
-    int _port;
-    std::string _password;
-    int _serverfd;
-    std::vector<Client *> clientList;
-    std::vector<Group *> groupList;
-
-    void handleClientMessages(fd_set &readfds);
-    void handleMessage(Client *client, const std::string &message);
-    std::string sendWelcomeMessage(void);
-    Log log;
+    void execute(Client *client, const std::vector<std::string> &tokens);
+    bool checkPassword(Client *client, const std::string &enteredPassword);
+    void setUsername(Client *client, const std::string &message);
+    void printStatus(Client *client);
+    void sendToUser(Client *client, const std::string &message);
+    void createGroup(Client *client, const std::string &message);
+    void loginToGroup(Client *client, const std::string &message);
+    void sendToGroup(Client *client, const std::string &message);
+    void joinGroup(Client *client, const std::string &message);
+    void invite(Client *client, const std::string &message);
+    void kick(Client *client, const std::string &message);
+    void changeTopic(Client *client, const std::string &message);
+    void setMode(Client *client, const std::string &message);    
 };
 
 // Utility functions

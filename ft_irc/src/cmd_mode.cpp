@@ -28,37 +28,37 @@ Command: MODE
         · l: Set/remove the user limit to channel
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
-void Command::setMode(Client *client, const std::string &message)
-{
-  std::string new_temp = message.substr(5);
-  if (server->isClientValidForGroup(client, new_temp))
-  {
-    if (new_temp[0] == 'i')
-    {
-      new_temp = new_temp.substr(2);
-      server->set_remove_invite_only(new_temp, client);
-    }
-    else if (new_temp[0] == 't')
-    {
-      new_temp = new_temp.substr(2);
-      server->set_remove_topic(new_temp, client);
-    }
-    else if (new_temp[0] == 'k')
-    {
-      new_temp = new_temp.substr(2);
-      server->set_channel_password(new_temp, client);
-    }
-    else if (new_temp[0] == 'o')
-    {
-      new_temp = new_temp.substr(2);
-      server->remove_operator_privilege(new_temp, client);
-    }
-    else if (new_temp[0] == 'l')
-    {
-      new_temp = new_temp.substr(2);
-      server->set_user_limit(new_temp, client);
-    }
-  }
-}
+// void Command::setMode(Client *client, const std::string &message)
+// {
+//   std::string new_temp = message.substr(5);
+//   if (server->isClientValidForGroup(client, new_temp))
+//   {
+//     if (new_temp[0] == 'i')
+//     {
+//       new_temp = new_temp.substr(2);
+//       server->set_remove_invite_only(new_temp, client);
+//     }
+//     else if (new_temp[0] == 't')
+//     {
+//       new_temp = new_temp.substr(2);
+//       server->set_remove_topic(new_temp, client);
+//     }
+//     else if (new_temp[0] == 'k')
+//     {
+//       new_temp = new_temp.substr(2);
+//       server->set_channel_password(new_temp, client);
+//     }
+//     else if (new_temp[0] == 'o')
+//     {
+//       new_temp = new_temp.substr(2);
+//       server->remove_operator_privilege(new_temp, client);
+//     }
+//     else if (new_temp[0] == 'l')
+//     {
+//       new_temp = new_temp.substr(2);
+//       server->set_user_limit(new_temp, client);
+//     }
+//   }
+// }

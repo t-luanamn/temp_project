@@ -3,7 +3,7 @@ Command: PRIVMSG
    Parameters: <msgtarget> <text to be sent>
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
 void Server::send_to_user(const std::string &src_string)
 {

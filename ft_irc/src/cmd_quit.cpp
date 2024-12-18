@@ -17,5 +17,5 @@ Command: QUIT
    User syrk has quit IRC to have lunch.
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 

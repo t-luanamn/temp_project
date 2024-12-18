@@ -3,7 +3,7 @@ Command: OPER
    Parameters: <name> <password>
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
 void Server::create_group(Client *current_client, const std::string &newGroupName)
 {

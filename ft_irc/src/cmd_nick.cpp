@@ -3,5 +3,5 @@ Command: NICK
    Parameters: <nickname>
 */
 
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 

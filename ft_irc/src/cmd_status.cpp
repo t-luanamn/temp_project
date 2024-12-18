@@ -1,4 +1,4 @@
-#include "../inc/Command.hpp"
+#include "../inc/Server.hpp"
 
 void Server::print_status() const
 {

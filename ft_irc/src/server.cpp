@@ -80,7 +80,6 @@ void Server::start()
     int maxfd = _serverfd;
 
     // Add client sockets to fd_set:
-    // All client socket file descriptors are added to readfds.
     for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
     {
       int sd = (*it)->getClientfd();
@@ -91,9 +90,6 @@ void Server::start()
       }
     }
 
-    // The select function is called to monitor the file descriptors in readfds
-    // The select function ensures that read and send are only called when
-    // the file descriptors are ready, thus avoiding blocking.
     int activity = select(maxfd + 1, &readfds, NULL, NULL, NULL);
     if (activity < 0)
     {
@@ -101,7 +97,6 @@ void Server::start()
       continue;
     }
 
-    // If the server socket is readable, a new client connection is accepted.
     if (FD_ISSET(_serverfd, &readfds))
     {
       int clientfd = accept(_serverfd, (struct sockaddr *)NULL, NULL);
@@ -112,20 +107,9 @@ void Server::start()
       }
       Client *new_client = new Client(clientfd);
       clientList.push_back(new_client);
-      std::string welMsg = sendWelcomeMessage();
-      send(clientfd, welMsg.c_str(), welMsg.length(), MSG_DONTROUTE);
     }
     handleClientMessages(readfds);
   }
-}
-
-std::string Server::sendWelcomeMessage(void)
-{
-  std::string msg = B;
-  msg.append("Welcome to " + _servName + "!\n");
-  msg.append(Y);
-  msg.append("Please enter password to continue.\nPASS <serv_pass>\n");
-  msg.append(RESET);
 }
 
 void Server::handleClientMessages(fd_set &readfds)
@@ -136,6 +120,13 @@ void Server::handleClientMessages(fd_set &readfds)
     int sd = (*it)->getClientfd();
     if (FD_ISSET(sd, &readfds))
     {
+      std::string msg = B;
+      msg.append("Welcome to " + _servName + "!\n");
+      msg.append(Y);
+      msg.append("Please enter password to continue.\nPASS <serv_pass>\n");
+      msg.append(RESET);
+      send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
+
       int valread = read(sd, message, 1024);
       if (valread == 0)
       {
@@ -152,18 +143,21 @@ void Server::handleClientMessages(fd_set &readfds)
   }
 }
 
+std::string Server::sendWelcomeMessage(std::string usr)
+{
+  std::string msg_login = B;
+  msg_login.append("Welcome " + usr + " to " + _servName + "!\n");
+  msg_login.append(RESET);
+}
+
 void Server::handleMessage(Client *client, const std::string &message)
 {
     std::istringstream iss(message);
     std::vector<std::string> tokens;
     std::string token;
-    while (iss >> token) {
+    while (iss >> token)
+    {
         tokens.push_back(token);
     }
-
-    Command command(this);
-    command.execute(client, tokens);
+    execute(client, tokens);
 }
-
-
-

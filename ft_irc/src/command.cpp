@@ -23,9 +23,7 @@ The commands described here are used to register a connection with an
    it was registered.
 */
 
-#include "../inc/Command.hpp"
-
-Command::Command(Server *server) : server(server) {}
+#include "../inc/Server.hpp"
 
 /*
 void Command::execute(Client *client, const std::vector<std::string> &tokens)
@@ -85,7 +83,7 @@ void Command::execute(Client *client, const std::vector<std::string> &tokens)
 }
 */
 
-void Command::execute(Client *client, const std::vector<std::string> &tokens)
+void Server::execute(Client *client, const std::vector<std::string> &tokens)
 {
   if (tokens.empty())
   {
@@ -127,20 +125,20 @@ void Command::execute(Client *client, const std::vector<std::string> &tokens)
   }
 }
 
-void Command::setUsername(Client *client, const std::string &message)
+void Server::setUsername(Client *client, const std::string &message)
 {
     client->setUsername(message.substr(13));
     std::cout << "Client username set to: " << client->getUsername() << std::endl;
 }
 
-void Command::printStatus(Client *client)
+void Server::printStatus(Client *client)
 {
   (void)client; // Mark the parameter as unused)
-  server->print_status();
+  print_status();
 }
 
-void Command::sendToUser(Client *client, const std::string &message)
+void Server::sendToUser(Client *client, const std::string &message)
 {
   (void)client; // Mark the parameter as unused)
-  server->send_to_user(message.substr(13));
+  send_to_user(message.substr(13));
 }

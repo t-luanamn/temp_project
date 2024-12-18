@@ -12,19 +12,30 @@ class Client
   public:
     Client(int fd);
     ~Client();
+
     int getClientfd() const;
-    void setUsername(const std::string &username);
     std::string getUsername() const;
-    void setLoginStatus(bool status);
-    bool getLoginStatus() const;
-    void addGroup(Group *group);
+    void setUsername(const std::string &username);
+    bool isLoggedIn() const;
+    void setLoggedIn(bool status);
     std::vector<Group *> getGroups() const;
+
+    // Methods to manage client connection state
+    void setPassReceived(bool received);
+    void setNickReceived(bool received);
+    void setUserReceived(bool received);
+    bool isRegistered() const;
 
   private:
     int clientfd;
     std::string username;
     bool log_in_status;
     std::vector<Group *> chatgroupList;
+
+    // Member variables to track connection state
+    bool passReceived;
+    bool nickReceived;
+    bool userReceived;
 };
 
 class Group
