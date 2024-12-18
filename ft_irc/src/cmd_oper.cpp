@@ -5,6 +5,7 @@ Command: OPER
 
 #include "../inc/Server.hpp"
 
+/*
 void Server::create_group(Client *current_client, const std::string &newGroupName)
 {
   Group *newGroup = new Group(newGroupName); // Use constructor to set group name
@@ -122,3 +123,5 @@ void Server::set_user_limit(const std::string &src_string, Client *current_clien
   }
   std::cout << "Group " << GroupName << " not found.\n";
 }
+
+*/

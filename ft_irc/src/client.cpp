@@ -1,7 +1,7 @@
 #include "../inc/Client.hpp"
 
-Client::Client(int fd)
-    : clientfd(fd), log_in_status(false), passReceived(false), nickReceived(false), userReceived(false)
+Client::Client(int clientfd)
+    : _clientfd(clientfd), _registered(false), log_in_status(false), passReceived(false), nickReceived(false), userReceived(false)
 {
 }
 
@@ -11,7 +11,7 @@ Client::~Client()
 
 int Client::getClientfd() const
 {
-    return clientfd;
+    return _clientfd;
 }
 
 std::string Client::getUsername() const
@@ -54,9 +54,14 @@ void Client::setUserReceived(bool received)
     userReceived = received;
 }
 
+void Client::setRegistered(bool registered)
+{
+  _registered = registered;
+}
+
 bool Client::isRegistered() const
 {
-    return passReceived && nickReceived && userReceived;
+    return _registered;
 }
 
 // -----------

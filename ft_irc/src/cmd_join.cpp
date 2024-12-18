@@ -58,17 +58,18 @@ Command: JOIN
 
 #include "../inc/Server.hpp"
 
-void Command::createGroup(Client *client, const std::string &message)
+/*
+void Server::createGroup(Client *client, const std::string &message)
 {
     server->create_group(client, message.substr(13));
 }
 
-void Command::loginToGroup(Client *client, const std::string &message)
+void Server::loginToGroup(Client *client, const std::string &message)
 {
     server->login_to_group(message.substr(15), client);
 }
 
-void Command::sendToGroup(Client *client, const std::string &message)
+void Server::sendToGroup(Client *client, const std::string &message)
 {
     if (server->isClientValidForGroup(client, message.substr(14)))
     {
@@ -76,7 +77,7 @@ void Command::sendToGroup(Client *client, const std::string &message)
     }
 }
 
-void Command::joinGroup(Client *client, const std::string &message)
+void Server::joinGroup(Client *client, const std::string &message)
 {
     if (server->isClientValidForGroup(client, message.substr(11)))
     {
@@ -171,3 +172,4 @@ void Server::login_to_group(const std::string &src_string, Client *current_clien
   std::cerr << "Group not found: " << GroupName << std::endl;
 }
 
+*/

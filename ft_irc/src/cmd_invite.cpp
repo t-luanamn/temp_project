@@ -5,16 +5,17 @@ Command: INVITE
 
 #include "../inc/Server.hpp"
 
-void Command::invite(Client *client, const std::string &message)
-{
-    if (server->isClientValidForGroup(client, message.substr(7)))
-    {
-        server->add_to_group(message.substr(7), client);
-    }
-}
+// void Server::invite(Client *client, const std::string &message)
+// {
+//     if (isClientValidForGroup(client, message.substr(7)))
+//     {
+//         add_to_group(message.substr(7), client);
+//     }
+// }
 
 // ------------------
 
+/*
 void Server::add_to_group(const std::string &src_string, Client *current_client)
 {
   size_t spacePos = src_string.find(' ');
@@ -133,3 +134,4 @@ bool Server::isClientValidForGroup(Client *current_client, const std::string &gr
   return false;
 }
 
+*/

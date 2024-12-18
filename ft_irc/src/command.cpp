@@ -93,19 +93,8 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   std::string command = tokens[0];
   if (command == "PASS")
   {
-    if (tokens.size() > 1)
-    {
-      std::string password;
-      for (size_t i = 1; i < tokens.size(); ++i)
-      {
-        if (i > 1)
-        {
-          password += " ";
-        }
-        password += tokens[i];
-      }
-      checkPassword(client, password);
-    }
+    std::string msg = "You are already registered.\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
   }
   else if (command == "USER")
   {
@@ -115,10 +104,10 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
       setUsername(client, username);
     }
   }
-  else if (command == "STATUS")
-  {
-    printStatus(client);
-  }
+  // else if (command == "STATUS")
+  // {
+  //   printStatus(client);
+  // }
   else
   {
     std::cerr << "Unknown command: " << command << std::endl;
@@ -131,14 +120,14 @@ void Server::setUsername(Client *client, const std::string &message)
     std::cout << "Client username set to: " << client->getUsername() << std::endl;
 }
 
-void Server::printStatus(Client *client)
-{
-  (void)client; // Mark the parameter as unused)
-  print_status();
-}
+// void Server::printStatus(Client *client)
+// {
+//   (void)client; // Mark the parameter as unused)
+//   print_status();
+// }
 
-void Server::sendToUser(Client *client, const std::string &message)
-{
-  (void)client; // Mark the parameter as unused)
-  send_to_user(message.substr(13));
-}
+// void Server::sendToUser(Client *client, const std::string &message)
+// {
+//   (void)client; // Mark the parameter as unused)
+//   send_to_user(message.substr(13));
+// }

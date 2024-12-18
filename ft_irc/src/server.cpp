@@ -107,6 +107,14 @@ void Server::start()
       }
       Client *new_client = new Client(clientfd);
       clientList.push_back(new_client);
+
+      // Send password prompt to new client
+      std::string msg = B;
+      msg.append("Welcome to " + _servName + "!\n");
+      msg.append(Y);
+      msg.append("Please enter password to continue.\nPASS <serv_pass>\n");
+      msg.append(RESET);
+      send(clientfd, msg.c_str(), msg.length(), MSG_DONTROUTE);
     }
     handleClientMessages(readfds);
   }
@@ -120,13 +128,6 @@ void Server::handleClientMessages(fd_set &readfds)
     int sd = (*it)->getClientfd();
     if (FD_ISSET(sd, &readfds))
     {
-      std::string msg = B;
-      msg.append("Welcome to " + _servName + "!\n");
-      msg.append(Y);
-      msg.append("Please enter password to continue.\nPASS <serv_pass>\n");
-      msg.append(RESET);
-      send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
-
       int valread = read(sd, message, 1024);
       if (valread == 0)
       {
@@ -137,18 +138,45 @@ void Server::handleClientMessages(fd_set &readfds)
       else
       {
         message[valread] = '\0';
-        handleMessage(*it, message);
+        if (!(*it)->isRegistered())
+        {
+          // Handle password input
+          if (strncmp(message, "PASS ", 5) == 0)
+          {
+            std::string password = message + 5;
+            password.erase(password.find_last_not_of(" \n\r\t") + 1);
+            if (password == _password)
+            {
+              (*it)->setRegistered(true);
+              std::string msg = "Password accepted. You are now registered.\n";
+              send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
+            }
+            else
+            {
+              std::string msg = "Incorrect password. Please try again.\n";
+              send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
+            }
+          }
+          else
+          {
+            std::string msg = "Please enter password to continue.\nPASS <serv_pass>\n";
+            send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
+          }
+        }
+        else
+        {
+          handleMessage(*it, message);
+        }
       }
     }
   }
 }
-
-std::string Server::sendWelcomeMessage(std::string usr)
-{
-  std::string msg_login = B;
-  msg_login.append("Welcome " + usr + " to " + _servName + "!\n");
-  msg_login.append(RESET);
-}
+// std::string Server::sendWelcomeMessage(std::string usr)
+// {
+//   std::string msg_login = B;
+//   msg_login.append("Welcome " + usr + " to " + _servName + "!\n");
+//   msg_login.append(RESET);
+// }
 
 void Server::handleMessage(Client *client, const std::string &message)
 {

@@ -5,6 +5,7 @@ Command: TOPIC
 
 #include "../inc/Server.hpp"
 
+/*
 void Command::changeTopic(Client *client, const std::string &message)
 {
     if (server->isClientValidForGroup(client, message.substr(6)))
@@ -80,3 +81,5 @@ void Server::change_group_topic(const std::string &src_string, Client *current_c
   }
   std::cerr << "Group not found: " << GroupName << std::endl;
 }
+
+*/

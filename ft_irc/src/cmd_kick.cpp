@@ -19,6 +19,7 @@ Command: KICK
 
 #include "../inc/Server.hpp"
 
+/*
 void Command::kick(Client *client, const std::string &message)
 {
     if (server->isClientValidForGroup(client, message.substr(5)))
@@ -74,3 +75,5 @@ void Server::kick_from_group(const std::string &src_string, Client *current_clie
   std::string buffer = "Failed to remove " + targetUser + " from " + GroupName + ". Try again.\n";
   send(current_client->getClientfd(), buffer.c_str(), buffer.length(), MSG_DONTROUTE);
 }
+
+*/

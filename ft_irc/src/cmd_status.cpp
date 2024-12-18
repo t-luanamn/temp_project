@@ -1,5 +1,6 @@
 #include "../inc/Server.hpp"
 
+/*
 void Server::print_status() const
 {
   Log log;
@@ -24,3 +25,5 @@ void Server::print_status() const
     }
   }
 }
+
+*/

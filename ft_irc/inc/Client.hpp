@@ -10,8 +10,11 @@ class Group; // Forward declaration
 class Client
 {
   public:
-    Client(int fd);
+    Client(int clientfd);
     ~Client();
+
+    bool isRegistered() const;
+    void setRegistered(bool registered);
 
     int getClientfd() const;
     std::string getUsername() const;
@@ -24,10 +27,10 @@ class Client
     void setPassReceived(bool received);
     void setNickReceived(bool received);
     void setUserReceived(bool received);
-    bool isRegistered() const;
 
   private:
-    int clientfd;
+    int _clientfd;
+    bool _registered;
     std::string username;
     bool log_in_status;
     std::vector<Group *> chatgroupList;
