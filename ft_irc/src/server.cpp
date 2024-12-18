@@ -110,7 +110,7 @@ void Server::start()
 
       // Send password prompt to new client
       std::string msg = B;
-      msg.append("Welcome to " + _servName + "!\n");
+      msg.append("\nWelcome to " + _servName + "!\n\n");
       msg.append(Y);
       msg.append("Please enter password to continue.\nPASS <serv_pass>\n");
       msg.append(RESET);
@@ -140,28 +140,7 @@ void Server::handleClientMessages(fd_set &readfds)
         message[valread] = '\0';
         if (!(*it)->isRegistered())
         {
-          // Handle password input
-          if (strncmp(message, "PASS ", 5) == 0)
-          {
-            std::string password = message + 5;
-            password.erase(password.find_last_not_of(" \n\r\t") + 1);
-            if (password == _password)
-            {
-              (*it)->setRegistered(true);
-              std::string msg = "Password accepted. You are now registered.\n";
-              send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
-            }
-            else
-            {
-              std::string msg = "Incorrect password. Please try again.\n";
-              send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
-            }
-          }
-          else
-          {
-            std::string msg = "Please enter password to continue.\nPASS <serv_pass>\n";
-            send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
-          }
+          checkPassword(*it, message);
         }
         else
         {
@@ -171,12 +150,20 @@ void Server::handleClientMessages(fd_set &readfds)
     }
   }
 }
-// std::string Server::sendWelcomeMessage(std::string usr)
-// {
-//   std::string msg_login = B;
-//   msg_login.append("Welcome " + usr + " to " + _servName + "!\n");
-//   msg_login.append(RESET);
-// }
+
+
+
+std::string Server::sendWelcomeMessage(std::string usr)
+{
+  std::string msg_login = B;
+  msg_login.append("\nWelcome ");
+  msg_login.append(Y);
+  msg_login.append(usr);
+  msg_login.append(B);
+  msg_login.append(" to " + _servName + "!\n\n");
+  msg_login.append(RESET);
+  return msg_login;
+}
 
 void Server::handleMessage(Client *client, const std::string &message)
 {

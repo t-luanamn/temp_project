@@ -36,7 +36,7 @@ class Server
 
     void handleClientMessages(fd_set &readfds);
     void handleMessage(Client *client, const std::string &message);
-    //std::string sendWelcomeMessage(std::string usr);
+    std::string sendWelcomeMessage(std::string usr);
     
     // void print_status() const;
     // void find_and_send_to_group(const std::string &src_string);
@@ -55,8 +55,9 @@ class Server
     // void change_group_topic(const std::string &src_string, Client *current_client);
 
     void execute(Client *client, const std::vector<std::string> &tokens);
-    bool checkPassword(Client *client, const std::string &enteredPassword);
-    void setUsername(Client *client, const std::string &message);
+    void checkPassword(Client *client, const char *message);
+    void setUser(Client *client, const std::vector<std::string> &tokens);
+    void setNick(Client *client, const std::vector<std::string> &tokens);
     // void printStatus(Client *client);
     // void sendToUser(Client *client, const std::string &message);
     // void createGroup(Client *client, const std::string &message);

@@ -98,11 +98,11 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   }
   else if (command == "USER")
   {
-    if (tokens.size() > 1)
-    {
-      std::string username = tokens[1];
-      setUsername(client, username);
-    }
+    setUser(client, tokens);
+  }
+  else if (command == "NICK")
+  {
+    setNick(client, tokens);
   }
   // else if (command == "STATUS")
   // {
@@ -110,15 +110,14 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   // }
   else
   {
-    std::cerr << "Unknown command: " << command << std::endl;
+    std::string msg = R;
+    msg.append("Unknown command: " + command + "\n");
+    msg.append(RESET);
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
   }
 }
 
-void Server::setUsername(Client *client, const std::string &message)
-{
-    client->setUsername(message.substr(13));
-    std::cout << "Client username set to: " << client->getUsername() << std::endl;
-}
+
 
 // void Server::printStatus(Client *client)
 // {

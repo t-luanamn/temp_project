@@ -15,30 +15,36 @@ class Client
 
     bool isRegistered() const;
     void setRegistered(bool registered);
-
     int getClientfd() const;
-    std::string getUsername() const;
     void setUsername(const std::string &username);
+    void setFirstName(const std::string &fname);
+    void setLastName(const std::string &lname);
+    std::string getUsername() const;
+    void setNickname(const std::string &nickname);
+    std::string getNickname() const;
     bool isLoggedIn() const;
     void setLoggedIn(bool status);
     std::vector<Group *> getGroups() const;
 
     // Methods to manage client connection state
-    void setPassReceived(bool received);
     void setNickReceived(bool received);
     void setUserReceived(bool received);
+    bool getNickReceived() const;
+    bool getUserReceived() const;
 
   private:
     int _clientfd;
-    bool _registered;
-    std::string username;
-    bool log_in_status;
+    std::string _username;
+    std::string _fname;
+    std::string _lname;
+    std::string _nick;
     std::vector<Group *> chatgroupList;
 
     // Member variables to track connection state
-    bool passReceived;
-    bool nickReceived;
-    bool userReceived;
+    bool _registered;
+    bool _nickReceived;
+    bool _userReceived;
+    bool _loginStatus;
 };
 
 class Group

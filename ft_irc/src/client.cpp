@@ -1,7 +1,7 @@
 #include "../inc/Client.hpp"
 
 Client::Client(int clientfd)
-    : _clientfd(clientfd), _registered(false), log_in_status(false), passReceived(false), nickReceived(false), userReceived(false)
+    : _clientfd(clientfd), _registered(false), _nickReceived(false), _userReceived(false), _loginStatus(false)
 {
 }
 
@@ -14,46 +14,6 @@ int Client::getClientfd() const
     return _clientfd;
 }
 
-std::string Client::getUsername() const
-{
-    return username;
-}
-
-void Client::setUsername(const std::string &username)
-{
-    this->username = username;
-}
-
-bool Client::isLoggedIn() const
-{
-    return log_in_status;
-}
-
-void Client::setLoggedIn(bool status)
-{
-    log_in_status = status;
-}
-
-std::vector<Group *> Client::getGroups() const
-{
-    return chatgroupList;
-}
-
-void Client::setPassReceived(bool received)
-{
-    passReceived = received;
-}
-
-void Client::setNickReceived(bool received)
-{
-    nickReceived = received;
-}
-
-void Client::setUserReceived(bool received)
-{
-    userReceived = received;
-}
-
 void Client::setRegistered(bool registered)
 {
   _registered = registered;
@@ -61,8 +21,81 @@ void Client::setRegistered(bool registered)
 
 bool Client::isRegistered() const
 {
-    return _registered;
+  return _registered;
 }
+
+void Client::setFirstName(const std::string &fname)
+{
+  _fname = fname;
+}
+
+void Client::setLastName(const std::string &lname)
+{
+  _lname = lname;
+}
+
+void Client::setUsername(const std::string &username)
+{
+    this->_username = username;
+}
+
+std::string Client::getUsername() const
+{
+    return _username;
+}
+
+void Client::setNickname(const std::string &nickname)
+{
+  _nick = nickname;
+}
+
+std::string Client::getNickname() const
+{
+  return _nick;
+}
+
+
+
+
+
+
+
+
+bool Client::isLoggedIn() const
+{
+    return _loginStatus;
+}
+
+void Client::setLoggedIn(bool status)
+{
+    _loginStatus = status;
+}
+
+std::vector<Group *> Client::getGroups() const
+{
+    return chatgroupList;
+}
+
+void Client::setNickReceived(bool received)
+{
+    _nickReceived = received;
+}
+
+bool Client::getNickReceived() const
+{
+    return _nickReceived;
+}
+
+void Client::setUserReceived(bool received)
+{
+    _userReceived = received;
+}
+
+bool Client::getUserReceived() const
+{
+    return _userReceived;
+}
+
 
 // -----------
 
