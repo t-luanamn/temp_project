@@ -17,6 +17,7 @@
 
 # define MAX_CLIENTS 5
 # define IP_ADDR "127.0.0.1"
+# define OPER_PASS "bean"
 class Server
 {
   public:
@@ -36,7 +37,7 @@ class Server
 
     void handleClientMessages(fd_set &readfds);
     void handleMessage(Client *client, const std::string &message);
-    std::string sendWelcomeMessage(std::string usr);
+    std::string sendWelcomeMessage(Client* client);
     void handleUserLogin(Client* client);
     // void print_status() const;
     // void find_and_send_to_group(const std::string &src_string);
@@ -59,6 +60,7 @@ class Server
     void checkPassword(Client *client, const char *message);
     void setUser(Client *client, const std::vector<std::string> &tokens);
     void setNick(Client *client, const std::vector<std::string> &tokens);
+    void setOper(Client *client, const std::vector<std::string> &tokens);
     // void printStatus(Client *client);
     // void sendToUser(Client *client, const std::string &message);
     // void createGroup(Client *client, const std::string &message);
@@ -74,5 +76,6 @@ class Server
 // Utility functions
 bool isNumber(const std::string &str);
 bool validateInput(int ac, char **av);
+bool isValidChannelName(const std::string& channelName);
 
 #endif

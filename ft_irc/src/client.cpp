@@ -1,7 +1,8 @@
 #include "../inc/Client.hpp"
 
 Client::Client(int clientfd)
-    : _clientfd(clientfd), _registered(false), _nickReceived(false), _userReceived(false), _loginStatus(false)
+    : _clientfd(clientfd), _registered(false), _nickReceived(false), _userReceived(false),
+      _loginStatus(false), _operator(false)
 {
 }
 
@@ -34,6 +35,16 @@ void Client::setLastName(const std::string &lname)
   _lname = lname;
 }
 
+std::string Client::getFirstName() const
+{
+    return _fname;
+}
+
+std::string Client::getLastName() const
+{
+    return _lname;
+}
+
 void Client::setUsername(const std::string &username)
 {
     this->_username = username;
@@ -64,7 +75,15 @@ void Client::setLoggedIn(bool status)
     _loginStatus = status;
 }
 
+bool Client::getOperator() const
+{
+  return _operator;
+}
 
+void Client::setOperator(bool value)
+{
+  _operator = value;
+}
 
 
 

@@ -32,3 +32,27 @@ bool validateInput(int ac, char **av)
   }
   return true;
 }
+
+bool isValidChannelName(const std::string& channelName)
+{
+  if (channelName.empty())
+    return false;
+
+  // Check if the first character is one of '&', '#', '+', '!'
+  char firstChar = channelName[0];
+  if (firstChar != '&' && firstChar != '#' && firstChar != '+' && firstChar != '!')
+    return false;
+
+  // Check the length of the channel name
+  if (channelName.length() > 50)
+    return false;
+
+  // Check for invalid characters
+  for (std::string::const_iterator it = channelName.begin() + 1; it != channelName.end(); ++it)
+  {
+    char c = *it;
+    if (c == ' ' || c == '\x07' || c == ',')
+      return false;
+  }
+  return true;
+}

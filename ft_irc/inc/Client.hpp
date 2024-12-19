@@ -18,6 +18,8 @@ class Client
     int getClientfd() const;
     void setUsername(const std::string &username);
     void setFirstName(const std::string &fname);
+    std::string getFirstName() const;
+    std::string getLastName() const;
     void setLastName(const std::string &lname);
     std::string getUsername() const;
     void setNickname(const std::string &nickname);
@@ -32,6 +34,8 @@ class Client
     void setUserReceived(bool received);
     bool getNickReceived() const;
     bool getUserReceived() const;
+    void setOperator(bool value);
+    bool getOperator() const;
 
   private:
     int _clientfd;
@@ -46,6 +50,7 @@ class Client
     bool _nickReceived;
     bool _userReceived;
     bool _loginStatus;
+    bool _operator;
 };
 
 class Group

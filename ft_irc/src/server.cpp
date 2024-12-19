@@ -134,6 +134,11 @@ void Server::start()
   }
 }
 
+/*
+Neet to handle when client disconnects.
+what to do with the client object?
+send dosconnect message to all clients? / server log?
+*/
 void Server::handleClientMessages(fd_set &readfds)
 {
   char message[1024];
@@ -175,30 +180,4 @@ void Server::handleMessage(Client *client, const std::string &message)
         tokens.push_back(token);
     }
     execute(client, tokens);
-}
-
-std::string Server::sendWelcomeMessage(std::string usr)
-{
-  std::string msg_login = B;
-  msg_login.append("\nWelcome ");
-  msg_login.append(Y);
-  msg_login.append(usr);
-  msg_login.append(B);
-  msg_login.append(" to " + _servName + "!\n\n");
-  msg_login.append(RESET);
-  return msg_login;
-}
-
-void Server::handleUserLogin(Client* client)
-{
-  client->setLoggedIn(true);
-  std::string welcomeMsg = sendWelcomeMessage(client->getUsername());
-  send(client->getClientfd(), welcomeMsg.c_str(), welcomeMsg.length(), MSG_DONTROUTE);
-
-  // Server log
-  log.out("User ");
-  log.out(client->getUsername(), B);
-  log.out(" with nickname ");
-  log.out(client->getNickname(), B);
-  log.nl(" has logged in.");
 }

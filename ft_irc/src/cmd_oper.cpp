@@ -1,127 +1,56 @@
 /*
 Command: OPER
    Parameters: <name> <password>
+
+   A normal user uses the OPER command to obtain operator privileges.
+   The combination of <name> and <password> are REQUIRED to gain
+   Operator privileges.  Upon success, the user will receive a MODE
+   message indicating the new user modes.
+
+   Example:
+
+   OPER foo bar                    ; Attempt to register as an operator
+                                   using a username of "foo" and "bar"
+                                   as the password.
+
+RPL_YOUREOPER ":You are now an IRC operator"
 */
 
 #include "../inc/Server.hpp"
 
-/*
-void Server::create_group(Client *current_client, const std::string &newGroupName)
+void Server::setOper(Client *client, const std::vector<std::string> &tokens)
 {
-  Group *newGroup = new Group(newGroupName); // Use constructor to set group name
-  newGroup->addMember(current_client); // Add current client as a member
-  newGroup->setOwner(current_client); // Set current client as the owner
-  newGroup->addOperator(current_client); // Add current client as an operator
-  current_client->addGroup(newGroup); // Add new group to the client's group list
-  groupList.push_back(newGroup); // Add new group to the server's group list
-}
-
-void Server::remove_operator_privilege(const std::string &src_string, Client *current_client)
-{
-  size_t spacePos = src_string.find(' ');
-  if (spacePos == std::string::npos)
+  if (tokens.size() < 3)
   {
-    std::cerr << "Invalid input format for Remove Operator Privilege\n";
+    std::string msg = "\033[0;31mError: Not enough parameters for OPER command.\033[0;0m\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
     return;
   }
-  std::string GroupName = src_string.substr(0, spacePos);
-  std::string targetUser = src_string.substr(spacePos + 1);
 
-  for (size_t j = 0; j < groupList.size(); j++)
+  const std::string &name = tokens[1];
+  std::string password;
+  for (size_t i = 2; i < tokens.size(); ++i)
   {
-    if (groupList[j]->getGroupName() == GroupName)
+    password += tokens[i];
+    if (i != tokens.size() - 1)
     {
-      if (!groupList[j]->isOperator(current_client))
-      {
-        std::cout << "You do not have permission to remove operator privileges.\n";
-        return;
-      }
-
-      std::vector<Client *> operators = groupList[j]->getOperatorList();
-      for (size_t i = 0; i < operators.size(); i++)
-      {
-        if (operators[i]->getUsername() == targetUser)
-        {
-          groupList[j]->removeOperator(operators[i]);
-          std::cout << "Operator privileges removed from " << targetUser << " in group " << GroupName << std::endl;
-          return;
-        }
-      }
-      std::cout << targetUser << " not found in operator list.\n";
-      return;
+      password += " ";
     }
   }
-  std::cout << "Group " << GroupName << " not found.\n";
-}
+  password.erase(password.find_last_not_of("\n\r\t") + 1);
 
-void Server::set_channel_password(const std::string &src_string, Client *current_client)
-{
-  std::istringstream stream(src_string);
-
-  std::string GroupName, set, newPassword;
-  stream >> GroupName >> set >> newPassword;
-
-  for (size_t j = 0; j < groupList.size(); j++)
+  if (name == client->getUsername() && password == OPER_PASS)
   {
-    if (groupList[j]->getGroupName() == GroupName)
-    {
-      if (!groupList[j]->isOperator(current_client))
-      {
-        std::cout << "You do not have permission to set or remove the channel password.\n";
-        return;
-      }
-
-      if (set == "set")
-      {
-        groupList[j]->setPasswordOn(true);
-        groupList[j]->setPassword(newPassword);
-      }
-      else if (set == "remove")
-      {
-        groupList[j]->setPasswordOn(false);
-        groupList[j]->setPassword("");
-      }
-
-      std::cout << "Channel password setting changed for group " << GroupName << std::endl;
-      return;
-    }
+    client->setOperator(true);
+    std::string msg = Y;
+    msg.append(client->getUsername());
+    msg.append(RESET);
+    msg.append("\n: You are now an IRC operator.\n");
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
   }
-  std::cout << "Group " << GroupName << " not found.\n";
-}
-
-void Server::set_user_limit(const std::string &src_string, Client *current_client)
-{
-  std::istringstream stream(src_string);
-
-  std::string GroupName, limit_bool, str_number;
-  stream >> GroupName >> limit_bool >> str_number;
-
-  for (size_t j = 0; j < groupList.size(); j++)
+  else
   {
-    if (groupList[j]->getGroupName() == GroupName)
-    {
-      if (!groupList[j]->isOperator(current_client))
-      {
-        std::cout << "You do not have permission to change user limit.\n";
-        return;
-      }
-
-      if (limit_bool == "set")
-      {
-        groupList[j]->setMemberLimitOn(true);
-        groupList[j]->setMemberLimit(atoi(str_number.c_str()));
-      }
-      else if (limit_bool == "remove")
-      {
-        groupList[j]->setMemberLimitOn(false);
-        groupList[j]->setMemberLimit(2147483647);
-      }
-
-      std::cout << "User limit setting changed for group " << GroupName << std::endl;
-      return;
-    }
+    std::string msg = "\033[0;31mError: Incorrect password or Username.\033[0;0m\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
   }
-  std::cout << "Group " << GroupName << " not found.\n";
 }
-
-*/

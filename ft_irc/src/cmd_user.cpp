@@ -42,4 +42,3 @@ void Server::setUser(Client *client, const std::vector<std::string> &tokens)
     handleUserLogin(client);
   }
 }
-

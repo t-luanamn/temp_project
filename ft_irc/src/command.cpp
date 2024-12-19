@@ -108,6 +108,10 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   {
     sendPrivateMessage(client, tokens);
   }
+  else if (command == "OPER")
+  {
+    setOper(client, tokens);
+  }
   // else if (command == "STATUS")
   // {
   //   printStatus(client);

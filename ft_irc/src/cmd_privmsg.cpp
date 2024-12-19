@@ -1,35 +1,19 @@
 /*
 Command: PRIVMSG
    Parameters: <msgtarget> <text to be sent>
+
+   PRIVMSG is used to send private messages between users, as well as to
+   send messages to channels.  <msgtarget> is usually the nickname of
+   the recipient of the message, or a channel name.
 */
 
 #include "../inc/Server.hpp"
-
-// void Server::sendPrivateMessage(const std::string &src_string)
-// {
-//   std::cout << "Command: Send To User\n";
-//   char delimiter = ' ';
-//   size_t spacePos = src_string.find(delimiter);
-
-//   std::string target_username = src_string.substr(0, spacePos);
-//   std::string message = src_string.substr(spacePos + 1);
-
-//   for (size_t i = 0; i < clientList.size(); i++)
-//   {
-//     if (clientList[i]->getUsername() == target_username)
-//     {
-//       send(clientList[i]->getClientfd(), message.c_str(), message.length(), MSG_DONTROUTE);
-//       return;
-//     }
-//   }
-//   std::cout << "No user with username: " << target_username << " found." << std::endl;
-// }
 
 void Server::sendPrivateMessage(Client* senderClient, const std::vector<std::string> &tokens)
 {
   if (tokens.size() < 3)
   {
-    std::string msg = "Error: Not enough parameters for PRIVMSG command.\n";
+    std::string msg = "\033[0;31mError: Not enough parameters for PRIVMSG command.\033[0;0m\n";
     send(senderClient->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
     return;
   }
@@ -48,7 +32,9 @@ void Server::sendPrivateMessage(Client* senderClient, const std::vector<std::str
   Client* targetClient = findClient(msgTarget);
   if (!targetClient)
   {
-    std::string msg = "Error: No such nick/username: " + msgTarget + "\n";
+    std::string msg = R;
+    msg.append("Error: No such nick/username: " + msgTarget + "\n");
+    msg.append(RESET);
     send(senderClient->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
     return;
   }
