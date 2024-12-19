@@ -24,6 +24,7 @@ class Client
     std::string getNickname() const;
     bool isLoggedIn() const;
     void setLoggedIn(bool status);
+
     std::vector<Group *> getGroups() const;
 
     // Methods to manage client connection state

@@ -104,6 +104,10 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   {
     setNick(client, tokens);
   }
+  else if (command == "PRIVMSG")
+  {
+    sendPrivateMessage(client, tokens);
+  }
   // else if (command == "STATUS")
   // {
   //   printStatus(client);

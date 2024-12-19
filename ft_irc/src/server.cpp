@@ -6,7 +6,8 @@ https://datatracker.ietf.org/doc/html/rfc2813
 
 #include "../inc/Server.hpp"
 
-Server::Server(const std::string &name, int port, const std::string &password) : _servName(name), _port(port), _password(password)
+Server::Server(const std::string &name, int port, const std::string &password)
+    : _servName(name), _port(port), _password(password)
 {
   log.nl("Server is created", G);
   log.out("Server listening on Port: ", G);
@@ -70,6 +71,12 @@ Server::~Server()
   log.nl("Server is destroyed", R);
 }
 
+/*
+The select() function is used to monitor the server socket and client sockets for readability.
+The read(), send() function is called only when select() indicates that there is data available to read on a socket.
+The code handles new connections and client messages.
+Non-blocking I/O operations.
+*/
 void Server::start()
 {
   fd_set readfds;
@@ -90,6 +97,7 @@ void Server::start()
       }
     }
 
+    // select() system call to monitor multiple file descriptors -- poll() alternative
     int activity = select(maxfd + 1, &readfds, NULL, NULL, NULL);
     if (activity < 0)
     {
@@ -97,6 +105,7 @@ void Server::start()
       continue;
     }
 
+    // Check for incoming connection
     if (FD_ISSET(_serverfd, &readfds))
     {
       int clientfd = accept(_serverfd, (struct sockaddr *)NULL, NULL);
@@ -107,6 +116,11 @@ void Server::start()
       }
       Client *new_client = new Client(clientfd);
       clientList.push_back(new_client);
+
+      // Server log
+      log.out("New client connected: ", G);
+      log.out("client_fd ", Y);
+      log.nl(clientfd, B);
 
       // Send password prompt to new client
       std::string msg = B;
@@ -151,7 +165,17 @@ void Server::handleClientMessages(fd_set &readfds)
   }
 }
 
-
+void Server::handleMessage(Client *client, const std::string &message)
+{
+    std::istringstream iss(message);
+    std::vector<std::string> tokens;
+    std::string token;
+    while (iss >> token)
+    {
+        tokens.push_back(token);
+    }
+    execute(client, tokens);
+}
 
 std::string Server::sendWelcomeMessage(std::string usr)
 {
@@ -165,14 +189,16 @@ std::string Server::sendWelcomeMessage(std::string usr)
   return msg_login;
 }
 
-void Server::handleMessage(Client *client, const std::string &message)
+void Server::handleUserLogin(Client* client)
 {
-    std::istringstream iss(message);
-    std::vector<std::string> tokens;
-    std::string token;
-    while (iss >> token)
-    {
-        tokens.push_back(token);
-    }
-    execute(client, tokens);
+  client->setLoggedIn(true);
+  std::string welcomeMsg = sendWelcomeMessage(client->getUsername());
+  send(client->getClientfd(), welcomeMsg.c_str(), welcomeMsg.length(), MSG_DONTROUTE);
+
+  // Server log
+  log.out("User ");
+  log.out(client->getUsername(), B);
+  log.out(" with nickname ");
+  log.out(client->getNickname(), B);
+  log.nl(" has logged in.");
 }

@@ -39,8 +39,7 @@ void Server::setUser(Client *client, const std::vector<std::string> &tokens)
   // Check if both NICK and USER have been received
   if (client->getNickReceived())
   {
-    client->setLoggedIn(true);
-    std::string welcomeMsg = sendWelcomeMessage(client->getUsername());
-    send(client->getClientfd(), welcomeMsg.c_str(), welcomeMsg.length(), MSG_DONTROUTE);
+    handleUserLogin(client);
   }
 }
+

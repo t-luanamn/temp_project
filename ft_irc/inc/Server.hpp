@@ -37,11 +37,12 @@ class Server
     void handleClientMessages(fd_set &readfds);
     void handleMessage(Client *client, const std::string &message);
     std::string sendWelcomeMessage(std::string usr);
-    
+    void handleUserLogin(Client* client);
     // void print_status() const;
     // void find_and_send_to_group(const std::string &src_string);
     // void join_group(const std::string &targetGroup, Client *client);
-    // void send_to_user(const std::string &src_string);
+    void sendPrivateMessage(Client* senderClient, const std::vector<std::string> &tokens);
+    Client* findClient(const std::string &name);
     // void create_group(Client *current_client, const std::string &newGroupName);
     // void add_to_group(const std::string &src_string, Client *current_client);
     // void kick_from_group(const std::string &src_string, Client *current_client);

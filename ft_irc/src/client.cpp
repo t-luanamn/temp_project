@@ -54,13 +54,6 @@ std::string Client::getNickname() const
   return _nick;
 }
 
-
-
-
-
-
-
-
 bool Client::isLoggedIn() const
 {
     return _loginStatus;
@@ -70,6 +63,13 @@ void Client::setLoggedIn(bool status)
 {
     _loginStatus = status;
 }
+
+
+
+
+
+
+
 
 std::vector<Group *> Client::getGroups() const
 {

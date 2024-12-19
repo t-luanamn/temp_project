@@ -23,6 +23,9 @@ void Server::checkPassword(Client *client, const char *message)
       msg.append("NICK <nickname>\n");
       msg.append(RESET);
       send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
+
+      // Server log
+      log.nl("Client " + std::to_string(sd) + " has registered.");
     }
     else
     {
