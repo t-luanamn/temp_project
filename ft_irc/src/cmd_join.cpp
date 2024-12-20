@@ -341,4 +341,90 @@ void Server::set_user_limit(const std::string &src_string, Client *current_clien
 
 
 
-//bool isValidChannelName(const std::string& channelName)
+
+
+void Server::joinChannel(Client* client, const std::vector<std::string> &tokens)
+{
+  if (tokens.size() < 2)
+  {
+    std::string msg = "\033[0;31mError: No channel specified.\033[0;0m\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+    return;
+  }
+
+  std::string channels = tokens[1];
+  std::string keys = tokens.size() > 2 ? tokens[2] : "";
+
+  std::vector<std::string> channelList = split(channels, ',');
+  std::vector<std::string> keyList = split(keys, ',');
+
+  for (size_t i = 0; i < channelList.size(); ++i)
+  {
+    std::string channel = channelList[i];
+    std::string key = i < keyList.size() ? keyList[i] : "";
+
+    if (!isValidChannelName(channel))
+    {
+      std::string msg = R;
+      msg.append("Error: Invalid channel name: ");
+      msg.append(channel + "\n");
+      msg.append(RESET);
+      msg.append("Channel names must begin with one of '&', '#', '+', or '!', ");
+      msg.append("and must not contain spaces, control G, or commas.\n");
+      send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+      continue;
+    }
+
+    Channel* chan = findChannelByName(channel);
+    if (!chan)
+    {
+      chan = createChannel(channel, key);
+    }
+
+    if (chan->isUserInChannel(client))
+    {
+      std::string msg = "\033[0;31mError: You are already in channel: \033[0;0m";
+      msg.append(channel + "\n");
+      send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+      continue;
+    }
+
+    if (chan->isInviteOnly() && !chan->isInvited(client))
+    {
+      std::string msg = "\033[0;31mError: Channel: \033[0;0m";
+      msg.append(channel);
+      msg.append("\033[0;31m is invite-only.\033[0;0m\n");
+      send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+      continue;
+    }
+
+    if (chan->hasKey())
+    {
+      if (key.empty() || chan->getKey() != key)
+      {
+        std::string msg = "\033[0;31mError: Incorrect key for channel: \033[0;0m";
+        msg.append(channel + "\n");
+        send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+        continue;
+      }
+    }
+
+    if (chan->isFull())
+    {
+      std::string msg = "\033[0;31mError: Channel: \033[0;0m";
+      msg.append(channel);
+      msg.append("\033[0;31m is full.\033[0;0m\n");
+      send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+      continue;
+    }
+
+    chan->addUser(client);
+    sendJoinMessage(client, chan);
+
+    // Server log
+    log.out("User ", G);
+    log.out(client->getUsername(), Y);
+    log.out(" joined channel ", G);
+    log.nl(channel, Y);
+  }
+}

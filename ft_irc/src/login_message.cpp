@@ -6,7 +6,7 @@ std::string Server::sendWelcomeMessage(Client* client)
   std::string msg_login = G;
   msg_login.append("\nWelcome to the Internet Relay Network\n");
   msg_login.append(Y);
-  msg_login.append(client->getNickname() + "!" + client->getUsername() + "@" + _servName + "!\n\n");
+  msg_login.append(client->getNickname() + "!" + client->getUsername() + "@" + _servName + "\n\n");
   msg_login.append(B);
   msg_login.append("------ Your details ------\n");
   msg_login.append("Username      : ");

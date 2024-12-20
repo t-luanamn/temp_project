@@ -62,11 +62,11 @@ Server::~Server()
   }
   clientList.clear();
   
-  for (std::vector<Group *>::iterator it = groupList.begin(); it != groupList.end(); ++it)
+  for (std::vector<Channel *>::iterator it = channelList.begin(); it != channelList.end(); ++it)
   {
     delete *it;
   }
-  groupList.clear();
+  channelList.clear();
   
   log.nl("Server is destroyed", R);
 }
@@ -124,7 +124,7 @@ void Server::start()
 
       // Send password prompt to new client
       std::string msg = B;
-      msg.append("\nWelcome to " + _servName + "!\n\n");
+      msg.append("\nWelcome to " + _servName + "\n\n");
       msg.append(Y);
       msg.append("Please enter password to continue.\nPASS <serv_pass>\n");
       msg.append(RESET);

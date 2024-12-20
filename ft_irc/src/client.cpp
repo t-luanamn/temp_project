@@ -90,10 +90,10 @@ void Client::setOperator(bool value)
 
 
 
-std::vector<Group *> Client::getGroups() const
-{
-    return chatgroupList;
-}
+// std::vector<Group *> Client::getGroups() const
+// {
+//     return chatgroupList;
+// }
 
 void Client::setNickReceived(bool received)
 {
@@ -118,145 +118,145 @@ bool Client::getUserReceived() const
 
 // -----------
 
-Group::Group(const std::string &name) : groupName(name), inviteOnly(false), passwordOn(false), memberLimit(0), memberLimitOn(false), topic(""), topicBool(false), owner(NULL)
-{
-}
+// Group::Group(const std::string &name) : groupName(name), inviteOnly(false), passwordOn(false), memberLimit(0), memberLimitOn(false), topic(""), topicBool(false), owner(NULL)
+// {
+// }
 
-Group::~Group()
-{
-}
+// Group::~Group()
+// {
+// }
 
-std::string Group::getGroupName() const
-{
-  return groupName;
-}
+// std::string Group::getGroupName() const
+// {
+//   return groupName;
+// }
 
-void Group::setGroupName(const std::string &name)
-{
-  groupName = name;
-}
+// void Group::setGroupName(const std::string &name)
+// {
+//   groupName = name;
+// }
 
-void Group::addMember(Client *client)
-{
-  membersList.push_back(client);
-}
+// void Group::addMember(Client *client)
+// {
+//   membersList.push_back(client);
+// }
 
-void Group::removeMember(Client *client)
-{
-  membersList.erase(std::remove(membersList.begin(), membersList.end(), client), membersList.end());
-}
+// void Group::removeMember(Client *client)
+// {
+//   membersList.erase(std::remove(membersList.begin(), membersList.end(), client), membersList.end());
+// }
 
-void Group::addOperator(Client *client)
-{
-  operatorList.push_back(client);
-}
+// void Group::addOperator(Client *client)
+// {
+//   operatorList.push_back(client);
+// }
 
-void Group::removeOperator(Client *client)
-{
-  operatorList.erase(std::remove(operatorList.begin(), operatorList.end(), client), operatorList.end());
-}
+// void Group::removeOperator(Client *client)
+// {
+//   operatorList.erase(std::remove(operatorList.begin(), operatorList.end(), client), operatorList.end());
+// }
 
-bool Group::isOperator(Client *client) const
-{
-  return std::find(operatorList.begin(), operatorList.end(), client) != operatorList.end();
-}
+// bool Group::isOperator(Client *client) const
+// {
+//   return std::find(operatorList.begin(), operatorList.end(), client) != operatorList.end();
+// }
 
-void Group::setOwner(Client *client)
-{
-  owner = client;
-}
+// void Group::setOwner(Client *client)
+// {
+//   owner = client;
+// }
 
-Client* Group::getOwner() const
-{
-  return owner;
-}
+// Client* Group::getOwner() const
+// {
+//   return owner;
+// }
 
-void Group::setInviteOnly(bool inviteOnly)
-{
-  this->inviteOnly = inviteOnly;
-}
+// void Group::setInviteOnly(bool inviteOnly)
+// {
+//   this->inviteOnly = inviteOnly;
+// }
 
-bool Group::getInviteOnly() const
-{
-  return inviteOnly;
-}
+// bool Group::getInviteOnly() const
+// {
+//   return inviteOnly;
+// }
 
-void Group::setPassword(const std::string &password)
-{
-  this->password = password;
-}
+// void Group::setPassword(const std::string &password)
+// {
+//   this->password = password;
+// }
 
-std::string Group::getPassword() const
-{
-  return password;
-}
+// std::string Group::getPassword() const
+// {
+//   return password;
+// }
 
-void Group::setPasswordOn(bool passwordOn)
-{
-  this->passwordOn = passwordOn;
-}
+// void Group::setPasswordOn(bool passwordOn)
+// {
+//   this->passwordOn = passwordOn;
+// }
 
-bool Group::getPasswordOn() const
-{
-  return passwordOn;
-}
+// bool Group::getPasswordOn() const
+// {
+//   return passwordOn;
+// }
 
-void Group::setMemberLimit(int limit)
-{
-  memberLimit = limit;
-}
+// void Group::setMemberLimit(int limit)
+// {
+//   memberLimit = limit;
+// }
 
-int Group::getMemberLimit() const
-{
-  return memberLimit;
-}
+// int Group::getMemberLimit() const
+// {
+//   return memberLimit;
+// }
 
-void Group::setMemberLimitOn(bool memberLimitOn)
-{
-  this->memberLimitOn = memberLimitOn;
-}
+// void Group::setMemberLimitOn(bool memberLimitOn)
+// {
+//   this->memberLimitOn = memberLimitOn;
+// }
 
-bool Group::getMemberLimitOn() const
-{
-  return memberLimitOn;
-}
+// bool Group::getMemberLimitOn() const
+// {
+//   return memberLimitOn;
+// }
 
-void Group::setTopic(const std::string &topic)
-{
-  this->topic = topic;
-}
+// void Group::setTopic(const std::string &topic)
+// {
+//   this->topic = topic;
+// }
 
-std::string Group::getTopic() const
-{
-  return topic;
-}
+// std::string Group::getTopic() const
+// {
+//   return topic;
+// }
 
-void Group::setTopicBool(bool topicBool)
-{
-  this->topicBool = topicBool;
-}
+// void Group::setTopicBool(bool topicBool)
+// {
+//   this->topicBool = topicBool;
+// }
 
-bool Group::getTopicBool() const
-{
-  return topicBool;
-}
+// bool Group::getTopicBool() const
+// {
+//   return topicBool;
+// }
 
-void Group::addCurrentlySignedIn(Client *client)
-{
-  currentlySignedIn.push_back(client);
-}
+// void Group::addCurrentlySignedIn(Client *client)
+// {
+//   currentlySignedIn.push_back(client);
+// }
 
-std::vector<Client *> Group::getCurrentlySignedIn() const
-{
-  return currentlySignedIn;
-}
+// std::vector<Client *> Group::getCurrentlySignedIn() const
+// {
+//   return currentlySignedIn;
+// }
 
-std::vector<Client *> Group::getMembersList() const
-{
-  return membersList;
-}
+// std::vector<Client *> Group::getMembersList() const
+// {
+//   return membersList;
+// }
 
-std::vector<Client *> Group::getOperatorList() const
-{
-  return operatorList;
-}
+// std::vector<Client *> Group::getOperatorList() const
+// {
+//   return operatorList;
+// }

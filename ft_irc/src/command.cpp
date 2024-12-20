@@ -112,6 +112,14 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   {
     setOper(client, tokens);
   }
+  else if (command == "JOIN")
+  {
+    joinChannel(client, tokens);
+  }
+  else if (command == "MODE")
+  {
+    setMode(client, tokens);
+  }
   // else if (command == "STATUS")
   // {
   //   printStatus(client);

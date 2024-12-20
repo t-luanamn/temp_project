@@ -12,8 +12,6 @@ Command: OPER
    OPER foo bar                    ; Attempt to register as an operator
                                    using a username of "foo" and "bar"
                                    as the password.
-
-RPL_YOUREOPER ":You are now an IRC operator"
 */
 
 #include "../inc/Server.hpp"

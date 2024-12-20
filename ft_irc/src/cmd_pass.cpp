@@ -20,7 +20,7 @@ void Server::checkPassword(Client *client, const char *message)
       msg.append(Y);
       msg.append("Please set Username and Nickname\n");
       msg.append("USER <username> <fname> <lname>\n");
-      msg.append("NICK <nickname>\n");
+      msg.append("NICK <nickname>\n\n");
       msg.append(RESET);
       send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
 
