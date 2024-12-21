@@ -83,13 +83,8 @@ void Command::execute(Client *client, const std::vector<std::string> &tokens)
 }
 */
 
-void Server::execute(Client *client, const std::vector<std::string> &tokens)
+void Server::execute(Client *client, const std::vector<std::string> &tokens, const std::string &message)
 {
-  if (tokens.empty())
-  {
-    return;
-  }
-
   std::string command = tokens[0];
   if (command == "PASS")
   {
@@ -106,7 +101,7 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   }
   else if (command == "PRIVMSG")
   {
-    sendPrivateMessage(client, tokens);
+    sendPrivateMessage(client, tokens, message);
   }
   else if (command == "OPER")
   {
@@ -119,6 +114,18 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens)
   else if (command == "MODE")
   {
     setMode(client, tokens);
+  }
+  else if (command == "INVITE")
+  {
+    setInvite(client, tokens);
+  }
+  else if (command == "KICK")
+  {
+    kick(client, tokens);
+  }
+  else if (command == "TOPIC")
+  {
+    // changeTopic(client, tokens);
   }
   // else if (command == "STATUS")
   // {

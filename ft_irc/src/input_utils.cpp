@@ -33,6 +33,18 @@ bool validateInput(int ac, char **av)
   return true;
 }
 
+Client* Server::findClient(const std::string &name)
+{
+  for (size_t i = 0; i < clientList.size(); ++i)
+  {
+    if (clientList[i]->getUsername() == name || clientList[i]->getNickname() == name)
+    {
+      return clientList[i];
+    }
+  }
+  return NULL;
+}
+
 bool isValidChannelName(const std::string& channelName)
 {
   if (channelName.empty())
@@ -106,6 +118,16 @@ void Server::sendJoinMessage(Client* client, Channel* channel)
   msg.append(channel->getName() + "\n");
   msg.append(RESET);
 
+  const std::set<Client*>& users = channel->getUsers();
+  for (std::set<Client*>::const_iterator it = users.begin(); it != users.end(); ++it)
+  {
+    send((*it)->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+  }
+}
+
+void Server::sendPartMessage(Client *client, Channel *channel)
+{
+  std::string msg = ":" + client->getNickname() + "!" + client->getUsername() + "@" + _servName + " PART " + channel->getName() + "\n";
   const std::set<Client*>& users = channel->getUsers();
   for (std::set<Client*>::const_iterator it = users.begin(); it != users.end(); ++it)
   {

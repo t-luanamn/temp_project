@@ -44,18 +44,22 @@ class Server
     std::string sendWelcomeMessage(Client* client);
     void handleUserLogin(Client* client);
     Client* findClient(const std::string &name);
-    void execute(Client *client, const std::vector<std::string> &tokens);
+    void execute(Client *client, const std::vector<std::string> &tokens, const std::string &message);
     void checkPassword(Client *client, const char *message);
     void setUser(Client *client, const std::vector<std::string> &tokens);
     void setNick(Client *client, const std::vector<std::string> &tokens);
     void setOper(Client *client, const std::vector<std::string> &tokens);
-    void sendPrivateMessage(Client* senderClient, const std::vector<std::string> &tokens);
+    void sendPrivateMessage(Client* senderClient, const std::vector<std::string> &tokens, const std::string &message);
     void joinChannel(Client* client, const std::vector<std::string> &tokens);
+    void sendJoinMessage(Client* client, Channel* channel);
+    void leaveAllChannels(Client *client);
+    void sendPartMessage(Client *client, Channel *channel);
     Channel* findChannelByName(const std::string& channelName);
     Channel* createChannel(const std::string& channelName, const std::string& key = "");
-    void sendJoinMessage(Client* client, Channel* channel);
-    void setMode(Client *client, const std::vector<std::string> &tokens);
 
+    void setMode(Client *client, const std::vector<std::string> &tokens);
+    void setInvite(Client *client, const std::vector<std::string> &tokens);
+    void kick(Client *client, const std::vector<std::string> &tokens);
     
 };
 

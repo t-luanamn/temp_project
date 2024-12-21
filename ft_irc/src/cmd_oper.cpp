@@ -45,6 +45,10 @@ void Server::setOper(Client *client, const std::vector<std::string> &tokens)
     msg.append(RESET);
     msg.append("\n: You are now an IRC operator.\n");
     send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+
+    // Server log
+    log.out(client->getUsername(), B);
+    log.nl(" is now an IRC operator.");
   }
   else
   {

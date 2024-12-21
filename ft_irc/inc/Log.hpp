@@ -26,20 +26,24 @@ class Log
     void out(const int number);
     void out(const double number);
     void out(const float number);
+    void out(const size_t number);
     void nl(const std::string& message);
     void nl(const int number);
     void nl(const double number);
     void nl(const float number);
+    void nl(const size_t number);
 
     // Color text
     void out(const std::string& message, std::string color);
     void out(const int number, std::string color);
     void out(const double number, std::string color);
     void out(const float number, std::string color);
+    void out(const size_t number, std::string color);
     void nl(const std::string& message, std::string color);
     void nl(const int number, std::string color);
     void nl(const double number, std::string color);
     void nl(const float number, std::string color);
+    void nl(const size_t number, std::string color);
     void err(const std::string& message);
 };
 

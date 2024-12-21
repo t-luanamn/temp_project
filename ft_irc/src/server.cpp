@@ -172,12 +172,47 @@ void Server::handleClientMessages(fd_set &readfds)
 
 void Server::handleMessage(Client *client, const std::string &message)
 {
-    std::istringstream iss(message);
-    std::vector<std::string> tokens;
-    std::string token;
+  // Check if the message is empty or contains only whitespace
+  if (message.empty() || std::all_of(message.begin(), message.end(), isspace))
+  {
+    return;
+  }
+
+  std::istringstream iss(message);
+  std::vector<std::string> tokens;
+  std::string token;
+
+  // Extract the command
+  iss >> token;
+  tokens.push_back(token);
+
+  // Check if the command is PRIVMSG
+  if (token == "PRIVMSG")
+  {
+    // Extract the target
+    iss >> token;
+    tokens.push_back(token);
+
+    // Extract the remaining message
+    std::string remainingMessage;
+    std::getline(iss, remainingMessage);
+    if (!remainingMessage.empty() && remainingMessage[0] == ' ')
+    {
+      remainingMessage.erase(0, 1); // Remove leading space
+    }
+
+    // Pass the tokens and the remaining message to execute
+    execute(client, tokens, remainingMessage);
+  }
+  else
+  {
+    // For other commands, extract all tokens normally
     while (iss >> token)
     {
-        tokens.push_back(token);
+      tokens.push_back(token);
     }
-    execute(client, tokens);
+
+    // Pass the tokens to execute
+    execute(client, tokens, "");
+  }
 }

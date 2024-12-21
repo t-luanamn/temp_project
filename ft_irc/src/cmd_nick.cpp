@@ -19,9 +19,9 @@ void Server::setNick(Client *client, const std::vector<std::string> &tokens)
   // Check if username already exists
   for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
   {
-    if ((*it)->getNickname() == nickname)
+    if ((*it)->getNickname() == nickname || (*it)->getUsername() == nickname)
     {
-      std::string msg = "\033[0;31mNickname already exists. Please choose another nickname.\033[0;0m\n";
+      std::string msg = "\033[0;31mThis name already exists. Please choose another nickname.\033[0;0m\n";
       send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
       return;
     }

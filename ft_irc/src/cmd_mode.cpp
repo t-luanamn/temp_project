@@ -94,6 +94,39 @@ void Server::setMode(Client *client, const std::vector<std::string> &tokens)
       {
         case 'i':
           channel->setInviteOnly(adding);
+          if (adding)
+          {
+            std::string msg = B;
+            msg.append("Channel ");
+            msg.append(Y);
+            msg.append(channel->getName() + " ");
+            msg.append(RESET);
+            msg.append("is now invite-only.\n");
+            msg.append(RESET);
+            send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+        
+            // Server log
+            log.out(client->getUsername(), B);
+            log.out(" set channel ");
+            log.out(channel->getName(), Y);
+            log.nl(" to invite-only");
+          }
+          else
+          {
+            std::string msg = B;
+            msg.append("Channel ");
+            msg.append(Y);
+            msg.append(channel->getName() + " ");
+            msg.append(RESET);
+            msg.append("is no longer invite-only.\n");
+            msg.append(RESET);
+            send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+        
+            // Server log
+            log.out(client->getUsername(), B);
+            log.out(" removed invite-only from channel ");
+            log.nl(channel->getName(), Y);
+          }
           break;
         case 't':
           // Implement setting/removing topic restriction
@@ -102,9 +135,51 @@ void Server::setMode(Client *client, const std::vector<std::string> &tokens)
           if (paramIndex < tokens.size())
           {
             if (adding)
+            {
               channel->setKey(tokens[paramIndex]);
+              std::string msg = B;
+              msg.append("Channel key for ");
+              msg.append(Y);
+              msg.append(channel->getName() + " ");
+              msg.append(RESET);
+              msg.append("set to ");
+              msg.append(Y);
+              msg.append(tokens[paramIndex] + "\n");
+              msg.append(RESET);
+              send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+        
+              // Server log
+              log.out(client->getUsername(), B);
+              log.out(" set channel key for ");
+              log.out(channel->getName(), Y);
+              log.out(" to ");
+              log.nl(tokens[paramIndex], G);
+            }
             else
-              channel->setKey("");
+            {
+              if (channel->getKey() == tokens[paramIndex])
+              {
+                channel->setKey("");
+                std::string msg = B;
+                msg.append("Channel key for ");
+                msg.append(Y);
+                msg.append(channel->getName() + " ");
+                msg.append(RESET);
+                msg.append("removed.\n");
+                msg.append(RESET);
+                send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+
+                // Server log
+                log.out(client->getUsername(), B);
+                log.out(" removed channel key for ");
+                log.nl(channel->getName(), Y);
+              }
+              else
+              {
+                std::string msg = "\033[0;31mError: Incorrect key.\033[0;0m\n";
+                send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+              }
+            }
             paramIndex++;
           }
           break;
@@ -115,25 +190,94 @@ void Server::setMode(Client *client, const std::vector<std::string> &tokens)
             if (targetClient && channel->isUserInChannel(targetClient))
             {
               if (adding)
+              {
                 channel->addOperator(targetClient);
+                std::string msg = B;
+                msg.append(targetClient->getUsername() + " ");
+                msg.append(RESET);
+                msg.append("is now a channel operator on ");
+                msg.append(Y);
+                msg.append(channel->getName() + "\n");
+                msg.append(RESET);
+                send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+                send(targetClient->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+
+                // Server log
+                log.out(client->getUsername(), B);
+                log.out(" added operator: ");
+                log.out(targetClient->getUsername(), B);
+                log.out(" to ");
+                log.nl(channel->getName(), Y);
+              }
               else
+              {
                 channel->removeOperator(targetClient);
+                std::string msg = B;
+                msg.append(targetClient->getUsername() + " ");
+                msg.append(RESET);
+                msg.append("is no longer a channel operator on ");
+                msg.append(Y);
+                msg.append(channel->getName() + "\n");
+                msg.append(RESET);
+                send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+                send(targetClient->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+
+                // Server log
+                log.out(client->getUsername(), B);
+                log.out(" removed operator: ");
+                log.out(targetClient->getUsername(), R);
+                log.out(" from ");
+                log.nl(channel->getName(), Y);
+              }
             }
             paramIndex++;
           }
           break;
         case 'l':
-          if (paramIndex < tokens.size())
+          if (adding)
           {
-            if (adding)
+            if (paramIndex < tokens.size() && isNumber(tokens[paramIndex]))
             {
-              channel->setLimit(std::atoi(tokens[paramIndex].c_str()));
+              size_t limit = std::strtoul(tokens[paramIndex].c_str(), NULL, 10);
+              channel->setLimit(limit);
+              std::string msg = B;
+              msg.append(channel->getName() + " ");
+              msg.append(RESET);
+              msg.append("Channel limit set to ");
+              msg.append(Y);
+              msg.append(tokens[paramIndex] + "\n");
+              msg.append(RESET);
+              send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+              paramIndex++;
+
+              // Server log
+              log.out(client->getUsername(), B);
+              log.out(" set channel limit: ");
+              log.out(channel->getLimit(), G);
+              log.out(" for ");
+              log.nl(channel->getName(), Y);
             }
             else
             {
-              channel->setLimit(0);
+              std::string msg = "\033[0;31mError: Limit must be a whole number.\033[0;0m\n";
+              send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+              return;
             }
-            paramIndex++;
+          }
+          else
+          {
+            channel->setLimit(0);
+            std::string msg = B;
+            msg.append(channel->getName() + " ");
+            msg.append(RESET);
+            msg.append("Channel limit removed.\n");
+            msg.append(RESET);
+            send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+
+            // Server log
+            log.out(client->getUsername(), B);
+            log.out(" removed channel limit from ");
+            log.nl(channel->getName(), Y);
           }
           break;
         default:

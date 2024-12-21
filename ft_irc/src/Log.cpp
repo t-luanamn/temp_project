@@ -40,6 +40,11 @@ void Log::out(const float number)
 		std::cout << number;
 }
 
+void Log::out(const size_t number)
+{
+		std::cout << number;
+}
+
 void Log::nl(const std::string& message)
 {
 		std::cout << message << std::endl;
@@ -56,6 +61,11 @@ void Log::nl(const double number)
 }
 
 void Log::nl(const float number)
+{
+		std::cout << number << std::endl;
+}
+
+void Log::nl(const size_t number)
 {
 		std::cout << number << std::endl;
 }
@@ -81,6 +91,11 @@ void Log::out(const float number, std::string color)
 		std::cout << color << number << RESET;
 }
 
+void Log::out(const size_t number, std::string color)
+{
+		std::cout << color << number << RESET;
+}
+
 void Log::nl(const std::string& message, std::string color)
 {
 		std::cout << color << message << RESET << std::endl;
@@ -97,6 +112,11 @@ void Log::nl(const double number, std::string color)
 }
 
 void Log::nl(const float number, std::string color)
+{
+		std::cout << color << number << RESET << std::endl;
+}
+
+void Log::nl(const size_t number, std::string color)
 {
 		std::cout << color << number << RESET << std::endl;
 }

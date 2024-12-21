@@ -1,137 +1,97 @@
 /*
 Command: INVITE
    Parameters: <nickname> <channel>
+
+   The INVITE command is used to invite a user to a channel.  The
+   parameter <nickname> is the nickname of the person to be invited to
+   the target channel <channel>.  There is no requirement that the
+   channel the target user is being invited to must exist or be a valid
+   channel.  However, if the channel exists, only members of the channel
+   are allowed to invite other users.  When the channel has invite-only
+   flag set, only channel operators may issue INVITE command.
+
+   Only the user inviting and the user being invited will receive
+   notification of the invitation.  Other channel members are not
+   notified.  (This is unlike the MODE changes, and is occasionally the
+   source of trouble for users.)
+
+   Examples:
+
+   :Angel!wings@irc.org INVITE Wiz #Dust
+
+                                   ; Message to WiZ when he has been
+                                   invited by user Angel to channel
+                                   #Dust
+
+   INVITE Wiz #Twilight_Zone       ; Command to invite WiZ to
+                                   #Twilight_zone
 */
 
 #include "../inc/Server.hpp"
 
-// void Server::invite(Client *client, const std::string &message)
-// {
-//     if (isClientValidForGroup(client, message.substr(7)))
-//     {
-//         add_to_group(message.substr(7), client);
-//     }
-// }
-
-// ------------------
-
-/*
-void Server::add_to_group(const std::string &src_string, Client *current_client)
+void Server::setInvite(Client *client, const std::vector<std::string> &tokens)
 {
-  size_t spacePos = src_string.find(' ');
-  if (spacePos == std::string::npos)
+  if (tokens.size() < 3)
   {
-    std::cerr << "Invalid input format for Add to Group\n";
+    std::string msg = "\033[0;31mError: Not enough parameters.\033[0;0m\n";
+    msg.append("Usage: INVITE <nickname> <channel>\n");
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
     return;
   }
 
-  std::string GroupName = src_string.substr(0, spacePos);
-  std::string newUser = src_string.substr(spacePos + 1);
+  std::string nickname = tokens[1];
+  std::string channelName = tokens[2];
+  Client *targetClient = findClient(nickname);
+  Channel *channel = findChannelByName(channelName);
 
-  for (size_t i = 0; i < clientList.size(); ++i)
+  if (!targetClient)
   {
-    if (clientList[i]->getUsername() == newUser)
-    {
-      std::cout << "Client exists: " << newUser << std::endl;
-
-      for (size_t j = 0; j < groupList.size(); ++j)
-      {
-        if (groupList[j]->getGroupName() == GroupName)
-        {
-          if (!groupList[j]->isOperator(current_client))
-          {
-            std::cout << "You must be an operator to add members to the group: " << GroupName << ".\n";
-            return;
-          }
-
-          if (groupList[j]->getMemberLimit() > 0 && static_cast<int>(groupList[j]->getMembersList().size()) >= groupList[j]->getMemberLimit())
-          {
-            std::cout << "Cannot add to group: Member limit reached." << std::endl;
-            return;
-          }
-
-          groupList[j]->addMember(clientList[i]);
-          clientList[i]->addGroup(groupList[j]);
-
-          std::cout << "Client added to group: " << GroupName << std::endl;
-          return;
-        }
-      }
-      std::cout << "Group: " << GroupName << " does not exist." << std::endl;
-      return;
-    }
-  }
-  std::cout << "New member: " << newUser << " does not exist." << std::endl;
-
-  std::string buffer = "Failed to add " + newUser + " to " + GroupName + ". Try again.\n";
-  send(current_client->getClientfd(), buffer.c_str(), buffer.length(), MSG_DONTROUTE);
-}
-
-void Server::set_remove_invite_only(const std::string &src_string, Client *current_client)
-{
-  size_t spacePos = src_string.find(' ');
-  if (spacePos == std::string::npos)
-  {
-    std::cerr << "Invalid input format for Set/Remove Invite Only\n";
+    std::string msg = "\033[0;31mError: No such user.\033[0;0m\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
     return;
   }
-  std::string GroupName = src_string.substr(0, spacePos);
-  std::string set = src_string.substr(spacePos + 1);
 
-  for (size_t j = 0; j < groupList.size(); j++)
+  if (!channel)
   {
-    if (groupList[j]->getGroupName() == GroupName)
-    {
-      if (!groupList[j]->isOperator(current_client))
-      {
-        std::cout << "You do not have permission to change invite-only setting.\n";
-        return;
-      }
-
-      if (set == "set")
-        groupList[j]->setInviteOnly(true);
-      else if (set == "remove")
-        groupList[j]->setInviteOnly(false);
-
-      std::cout << "Invite-only setting changed for group " << GroupName << std::endl;
-      return;
-    }
+    std::string msg = "\033[0;31mError: No such channel.\033[0;0m\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+    return;
   }
-  std::cout << "Group " << GroupName << " not found.\n";
-}
 
-bool Server::isClientValidForGroup(Client *current_client, const std::string &groupName)
-{
-  for (size_t j = 0; j < groupList.size(); j++)
+  if (!channel->isUserInChannel(client))
   {
-    if (groupList[j]->getGroupName() == groupName)
-    {
-      bool isLoggedIn = current_client->getLoginStatus();
-      bool isPartOfGroup = std::find(groupList[j]->getMembersList().begin(), groupList[j]->getMembersList().end(), current_client) != groupList[j]->getMembersList().end();
-
-      if (!isLoggedIn || !isPartOfGroup)
-      {
-        std::cerr << "Client is not logged in or not part of the group.\n";
-        return false;
-      }
-
-      if (groupList[j]->getPassword() != "")
-      {
-        std::string enteredPassword;
-        std::cout << "Enter password for group " << groupName << ": ";
-        std::cin >> enteredPassword;
-
-        if (enteredPassword != groupList[j]->getPassword())
-        {
-          std::cerr << "Incorrect password.\n";
-          return false;
-        }
-      }
-      return true;
-    }
+    std::string msg = "\033[0;31mError: You're not on that channel.\033[0;0m\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+    return;
   }
-  std::cerr << "Group not found.\n";
-  return false;
-}
 
-*/
+  if (channel->isInviteOnly() && !client->getOperator())
+  {
+    std::string msg = "\033[0;31mError: You're not a channel operator.\033[0;0m\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+    return;
+  }
+
+  channel->addUser(targetClient);
+
+  std::string inviteMsg = ":" + client->getNickname() + "!" + client->getUsername() + "@" + _servName + " INVITE " + targetClient->getNickname() + " " + channel->getName() + "\n";
+  send(targetClient->getClientfd(), inviteMsg.c_str(), inviteMsg.length(), MSG_DONTROUTE);
+
+  std::string msg = B;
+  msg.append("You have invited ");
+  msg.append(Y);
+  msg.append(targetClient->getNickname() + " ");
+  msg.append(RESET);
+  msg.append("to ");
+  msg.append(Y);
+  msg.append(channel->getName() + "\n");
+  msg.append(RESET);
+  send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+
+  // Server log
+  log.out(client->getUsername(), B);
+  log.out(" invited ");
+  log.out(targetClient->getNickname(), G);
+  log.out(" to ");
+  log.nl(channel->getName(), Y);
+}
