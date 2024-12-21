@@ -125,7 +125,11 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens, con
   }
   else if (command == "TOPIC")
   {
-    // changeTopic(client, tokens);
+    setTopic(client, tokens);
+  }
+  else if (command == "QUIT")
+  {
+    clientQuit(client, tokens);
   }
   // else if (command == "STATUS")
   // {

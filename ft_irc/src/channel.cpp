@@ -89,3 +89,13 @@ void Channel::removeOperator(Client* client)
 {
   client->setOperator(false);
 }
+
+void Channel::setTopic(const std::string& topic)
+{
+  this->topic = topic;
+}
+
+const std::string& Channel::getTopic() const
+{
+  return topic;
+}

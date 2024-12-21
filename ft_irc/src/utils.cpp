@@ -134,3 +134,16 @@ void Server::sendPartMessage(Client *client, Channel *channel)
     send((*it)->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
   }
 }
+
+void Server::removeClient(Client *client)
+{
+  for (std::vector<Client*>::iterator it = clientList.begin(); it != clientList.end(); ++it)
+  {
+    if (*it == client)
+    {
+      clientList.erase(it);
+      delete client;
+      break;
+    }
+  }
+}

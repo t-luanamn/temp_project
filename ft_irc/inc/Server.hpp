@@ -56,11 +56,13 @@ class Server
     void sendPartMessage(Client *client, Channel *channel);
     Channel* findChannelByName(const std::string& channelName);
     Channel* createChannel(const std::string& channelName, const std::string& key = "");
-
     void setMode(Client *client, const std::vector<std::string> &tokens);
     void setInvite(Client *client, const std::vector<std::string> &tokens);
     void kick(Client *client, const std::vector<std::string> &tokens);
-    
+    void setTopic(Client *client, const std::vector<std::string> &tokens);
+    void clientQuit(Client *client, const std::vector<std::string> &tokens);
+    void removeClient(Client *client);
+
 };
 
 // Utility functions

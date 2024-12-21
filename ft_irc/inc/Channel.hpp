@@ -25,6 +25,8 @@ class Channel
     const std::set<Client*>& getUsers() const;
     void addOperator(Client* client);
     void removeOperator(Client* client);
+    void setTopic(const std::string& topic);
+    const std::string& getTopic() const;
 
   private:
     std::string name;
@@ -33,6 +35,7 @@ class Channel
     std::set<Client*> invitedUsers;
     std::string key;
     size_t limit;
+    std::string topic;
 };
 
 #endif

@@ -90,10 +90,13 @@ void Server::start()
     for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
     {
       int sd = (*it)->getClientfd();
-      FD_SET(sd, &readfds);
-      if (sd > maxfd)
+      if (sd > 0) // Ensure valid file descriptor
       {
-        maxfd = sd;
+        FD_SET(sd, &readfds);
+        if (sd > maxfd)
+        {
+          maxfd = sd;
+        }
       }
     }
 
@@ -142,19 +145,21 @@ send dosconnect message to all clients? / server log?
 void Server::handleClientMessages(fd_set &readfds)
 {
   char message[1024];
-  for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
+  for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end();)
   {
     int sd = (*it)->getClientfd();
-    if (FD_ISSET(sd, &readfds))
+    // Ensure valid file descriptor
+    if (sd > 0 && FD_ISSET(sd, &readfds))
     {
       int valread = read(sd, message, 1024);
       if (valread == 0)
       {
+        // Client disconnected
         close(sd);
-        clientList.erase(it);
-        break;
+        FD_CLR(sd, &readfds); // Remove from fd_set
+        it = clientList.erase(it); // Remove from client list and update iterator
       }
-      else
+      else if (valread > 0)
       {
         message[valread] = '\0';
         if (!(*it)->isRegistered())
@@ -165,7 +170,16 @@ void Server::handleClientMessages(fd_set &readfds)
         {
           handleMessage(*it, message);
         }
+        ++it;
       }
+      else
+      {
+        ++it;
+      }
+    }
+    else
+    {
+      ++it;
     }
   }
 }

@@ -12,7 +12,7 @@ Client::~Client()
 
 int Client::getClientfd() const
 {
-    return _clientfd;
+  return (_clientfd > 0) ? _clientfd : 0;
 }
 
 void Client::setRegistered(bool registered)
