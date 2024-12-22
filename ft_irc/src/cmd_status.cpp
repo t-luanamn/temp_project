@@ -1,29 +1,32 @@
 #include "../inc/Server.hpp"
 
-/*
-void Server::print_status() const
+void Server::printStatus(Client *client)
 {
-  Log log;
-
-  log.nl("Server Status:", G);
-  log.nl("----------------------------------------", G);
-  log.out("Server File Descriptor: ", G);
-  log.nl(_serverfd, B);
-  log.nl("Connected Clients:", G);
-
-  for (size_t i = 0; i < clientList.size(); ++i)
+  if (client == NULL)
   {
-    Client *client = clientList[i];
-    if (client)
+    std::string msg = "Client is null\n";
+    send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+    return;
+  }
+
+  std::string msg;
+  msg.append("Client Status:\n");
+  msg.append("Username: " + client->getUsername() + "\n");
+  msg.append("First Name: " + client->getFirstName() + "\n");
+  msg.append("Last Name: " + client->getLastName() + "\n");
+  msg.append("Nickname: " + client->getNickname() + "\n");
+  msg.append("Logged In: " + std::string(client->isLoggedIn() ? "Yes" : "No") + "\n");
+  msg.append("Registered: " + std::string(client->isRegistered() ? "Yes" : "No") + "\n");
+  msg.append("Operator: " + std::string(client->getOperator() ? "Yes" : "No") + "\n");
+
+  msg.append("Channels Joined:\n");
+  for (std::vector<Channel*>::const_iterator it = channelList.begin(); it != channelList.end(); ++it)
+  {
+    if ((*it)->isUserInChannel(client))
     {
-      log.out("Client ID: ", G);
-      log.nl(client->getClientfd(), B);
-      log.out("Username: ", G);
-      log.nl(client->getUsername(), B);
-      log.out("Logged In: ", G);
-      log.nl(client->getLoginStatus() ? "Yes" : "No", B);
+      msg.append(" - " + (*it)->getName() + "\n");
     }
   }
-}
 
-*/
+  send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
+}
