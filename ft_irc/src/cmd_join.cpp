@@ -153,6 +153,25 @@ void Server::joinChannel(Client* client, const std::vector<std::string> &tokens)
     chan->addUser(client);
     sendJoinMessage(client, chan);
 
+    // Send channel topic
+    std::string topicMsg = ":Welcome" + client->getNickname() + " to channel" + channel;
+    std::string topic = chan->getTopic();
+    if (!topic.empty())
+    {
+      topicMsg.append(" :" + topic + "\n");
+      send(client->getClientfd(), topicMsg.c_str(), topicMsg.length(), MSG_DONTROUTE);
+    }
+
+    // Send list of users in the channel
+    std::string userList = "\n--- Channel members ---\n";
+    const std::set<Client*>& users = chan->getUsers();
+    for (std::set<Client*>::const_iterator it = users.begin(); it != users.end(); ++it)
+    {
+      userList += (*it)->getNickname() + "!" + (*it)->getUsername() + "@" + _servName + "\n";
+    }
+    userList += "-----------------------\n";
+    send(client->getClientfd(), userList.c_str(), userList.length(), MSG_DONTROUTE);
+
     // Server log
     log.out("User ", G);
     log.out(client->getUsername(), Y);

@@ -77,6 +77,25 @@ void Server::setInvite(Client *client, const std::vector<std::string> &tokens)
   std::string inviteMsg = ":" + client->getNickname() + "!" + client->getUsername() + "@" + _servName + " INVITE " + targetClient->getNickname() + " " + channel->getName() + "\n";
   send(targetClient->getClientfd(), inviteMsg.c_str(), inviteMsg.length(), MSG_DONTROUTE);
 
+  // Send channel topic
+  std::string topicMsg = ":Welcome" + client->getNickname() + " to channel" + channel->getName();
+  std::string topic = channel->getTopic();
+  if (!topic.empty())
+  {
+    topicMsg.append(" :" + topic + "\n");
+    send(targetClient->getClientfd(), topicMsg.c_str(), topicMsg.length(), MSG_DONTROUTE);
+  }
+
+  // Send list of users in the channel
+  std::string userList = "\n--- Channel members ---\n";
+  const std::set<Client*>& users = channel->getUsers();
+  for (std::set<Client*>::const_iterator it = users.begin(); it != users.end(); ++it)
+  {
+    userList += (*it)->getNickname() + "!" + (*it)->getUsername() + "@" + _servName + "\n";
+  }
+  userList += "-----------------------\n";
+  send(targetClient->getClientfd(), userList.c_str(), userList.length(), MSG_DONTROUTE);
+
   std::string msg = B;
   msg.append("You have invited ");
   msg.append(Y);
