@@ -135,15 +135,15 @@ void Server::sendPartMessage(Client *client, Channel *channel)
   }
 }
 
-void Server::removeClient(Client *client)
-{
-  for (std::vector<Client*>::iterator it = clientList.begin(); it != clientList.end(); ++it)
-  {
-    if (*it == client)
-    {
-      clientList.erase(it);
-      delete client;
-      break;
-    }
-  }
-}
+// void Server::removeClient(Client *client)
+// {
+//   for (std::vector<Client*>::iterator it = clientList.begin(); it != clientList.end(); ++it)
+//   {
+//     if (*it == client)
+//     {
+//       clientList.erase(it);
+//       delete client;
+//       break;
+//     }
+//   }
+// }

@@ -7,6 +7,9 @@ Servers are uniquely identified by their name which has a maximum
    name.
 */
 
+/*
+When client suspended, to resume the connection, use cmd: fg
+*/
 int main(int ac, char **av)
 {
     if (!validateInput(ac, av))

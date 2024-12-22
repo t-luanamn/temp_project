@@ -2,6 +2,8 @@
 # define SERVER_HPP
 
 # include <iostream>
+# include <cstring>
+# include <sstream>
 # include <arpa/inet.h>
 # include <netinet/in.h>
 # include <sys/select.h>
@@ -60,8 +62,6 @@ class Server
     void setInvite(Client *client, const std::vector<std::string> &tokens);
     void kick(Client *client, const std::vector<std::string> &tokens);
     void setTopic(Client *client, const std::vector<std::string> &tokens);
-    void clientQuit(Client *client, const std::vector<std::string> &tokens);
-    void removeClient(Client *client);
 
 };
 
@@ -69,6 +69,5 @@ class Server
 bool isNumber(const std::string &str);
 bool validateInput(int ac, char **av);
 bool isValidChannelName(const std::string& channelName);
-
 
 #endif

@@ -87,15 +87,18 @@ void Server::start()
     int maxfd = _serverfd;
 
     // Add client sockets to fd_set:
-    for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
+    if (!clientList.empty())
     {
-      int sd = (*it)->getClientfd();
-      if (sd > 0) // Ensure valid file descriptor
+      for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
       {
-        FD_SET(sd, &readfds);
-        if (sd > maxfd)
+        int sd = (*it)->getClientfd();
+        if (sd > 0) // Ensure valid file descriptor
         {
-          maxfd = sd;
+          FD_SET(sd, &readfds);
+          if (sd > maxfd)
+          {
+            maxfd = sd;
+          }
         }
       }
     }
@@ -158,6 +161,11 @@ void Server::handleClientMessages(fd_set &readfds)
         close(sd);
         FD_CLR(sd, &readfds); // Remove from fd_set
         it = clientList.erase(it); // Remove from client list and update iterator
+        if (clientList.empty())
+        {
+          log.nl("No clients connected");
+          break;
+        }
       }
       else if (valread > 0)
       {
@@ -187,7 +195,17 @@ void Server::handleClientMessages(fd_set &readfds)
 void Server::handleMessage(Client *client, const std::string &message)
 {
   // Check if the message is empty or contains only whitespace
-  if (message.empty() || std::all_of(message.begin(), message.end(), isspace))
+  bool isWhitespace = true;
+  for (size_t i = 0; i < message.length(); ++i)
+  {
+    if (!isspace(message[i]))
+    {
+      isWhitespace = false;
+      break;
+    }
+  }
+
+  if (message.empty() || isWhitespace)
   {
     return;
   }
@@ -214,19 +232,16 @@ void Server::handleMessage(Client *client, const std::string &message)
     {
       remainingMessage.erase(0, 1); // Remove leading space
     }
-
-    // Pass the tokens and the remaining message to execute
-    execute(client, tokens, remainingMessage);
+    // Handle the PRIVMSG command
+    sendPrivateMessage(client, tokens, remainingMessage);
   }
   else
   {
-    // For other commands, extract all tokens normally
+    // Handle other commands
     while (iss >> token)
     {
       tokens.push_back(token);
     }
-
-    // Pass the tokens to execute
-    execute(client, tokens, "");
+    execute(client, tokens, message);
   }
 }

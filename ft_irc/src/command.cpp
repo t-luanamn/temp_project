@@ -25,64 +25,6 @@ The commands described here are used to register a connection with an
 
 #include "../inc/Server.hpp"
 
-/*
-void Command::execute(Client *client, const std::vector<std::string> &tokens)
-{
-    if (command == "PASS")
-    {
-        checkPassword(client, password);
-    }
-    else if (message.compare(0, 12, "USER") == 0)
-    {
-        setUsername(client, message);
-    }
-    else if (message.compare(0, 6, "STATUS") == 0)
-    {
-        printStatus(client);
-    }
-    else if (message.compare(0, 12, "Send To User") == 0)
-    {
-        sendToUser(client, message);
-    }
-    else if (message.compare(0, 12, "Create Group") == 0)
-    {
-        createGroup(client, message);
-    }
-    else if (message.compare(0, 14, "Login To Group") == 0)
-    {
-        loginToGroup(client, message);
-    }
-    else if (message.compare(0, 13, "Send To Group") == 0)
-    {
-        sendToGroup(client, message);
-    }
-    else if (message.compare(0, 10, "JOIN") == 0)
-    {
-        joinGroup(client, message);
-    }
-    else if (message.compare(0, 6, "INVITE") == 0)
-    {
-        invite(client, message);
-    }
-    else if (message.compare(0, 4, "KICK") == 0)
-    {
-        kick(client, message);
-    }
-    else if (message.compare(0, 5, "TOPIC") == 0)
-    {
-        changeTopic(client, message);
-    }
-    else if (message.compare(0, 4, "MODE") == 0)
-    {
-        setMode(client, message);
-    }
-    else
-    {
-        std::cout << "message: " << message << std::endl;
-    }
-}
-*/
-
 void Server::execute(Client *client, const std::vector<std::string> &tokens, const std::string &message)
 {
   std::string command = tokens[0];
@@ -127,10 +69,10 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens, con
   {
     setTopic(client, tokens);
   }
-  else if (command == "QUIT")
-  {
-    clientQuit(client, tokens);
-  }
+  // else if (command == "QUIT")
+  // {
+  //   clientQuit(client, tokens);
+  // }
   // else if (command == "STATUS")
   // {
   //   printStatus(client);
@@ -143,17 +85,3 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens, con
     send(client->getClientfd(), msg.c_str(), msg.length(), MSG_DONTROUTE);
   }
 }
-
-
-
-// void Server::printStatus(Client *client)
-// {
-//   (void)client; // Mark the parameter as unused)
-//   print_status();
-// }
-
-// void Server::sendToUser(Client *client, const std::string &message)
-// {
-//   (void)client; // Mark the parameter as unused)
-//   send_to_user(message.substr(13));
-// }

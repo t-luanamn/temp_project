@@ -25,7 +25,9 @@ void Server::checkPassword(Client *client, const char *message)
       send(sd, msg.c_str(), msg.length(), MSG_DONTROUTE);
 
       // Server log
-      log.nl("Client " + std::to_string(sd) + " has registered.");
+      log.nl("Client has registered.");
+      log.out(sd, B);
+      log.nl(" has registered.");
     }
     else
     {
