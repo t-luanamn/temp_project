@@ -25,8 +25,6 @@ class Client
     bool isLoggedIn() const;
     void setLoggedIn(bool status);
 
-    //std::vector<Group *> getGroups() const;
-
     // Methods to manage client connection state
     void setNickReceived(bool received);
     void setUserReceived(bool received);
@@ -35,13 +33,17 @@ class Client
     void setOperator(bool value);
     bool getOperator() const;
 
+    const std::string& getBuffer() const { return _buffer; }
+    void appendToBuffer(const std::string& data) { _buffer.append(data); }
+    void eraseFromBuffer(size_t pos, size_t len) { _buffer.erase(pos, len); }
+
   private:
     int _clientfd;
     std::string _username;
     std::string _fname;
     std::string _lname;
     std::string _nick;
-    //std::vector<Group *> chatgroupList;
+    std::string _buffer;
 
     // Member variables to track connection state
     bool _registered;

@@ -151,7 +151,6 @@ void Server::handleClientMessages(fd_set &readfds)
   for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end();)
   {
     int sd = (*it)->getClientfd();
-    // Ensure valid file descriptor
     if (sd > 0 && FD_ISSET(sd, &readfds))
     {
       int valread = read(sd, message, 1024);
@@ -159,8 +158,8 @@ void Server::handleClientMessages(fd_set &readfds)
       {
         // Client disconnected
         close(sd);
-        FD_CLR(sd, &readfds); // Remove from fd_set
-        it = clientList.erase(it); // Remove from client list and update iterator
+        FD_CLR(sd, &readfds);
+        it = clientList.erase(it);
         if (clientList.empty())
         {
           log.nl("No clients connected");
@@ -170,13 +169,22 @@ void Server::handleClientMessages(fd_set &readfds)
       else if (valread > 0)
       {
         message[valread] = '\0';
-        if (!(*it)->isRegistered())
+        (*it)->appendToBuffer(message); // Append received data to buffer
+
+        // Process complete commands
+        size_t pos;
+        while ((pos = (*it)->getBuffer().find('\n')) != std::string::npos)
         {
-          checkPassword(*it, message);
-        }
-        else
-        {
-          handleMessage(*it, message);
+          std::string command = (*it)->getBuffer().substr(0, pos);
+          (*it)->eraseFromBuffer(0, pos + 1);
+          if (!(*it)->isRegistered())
+          {
+            checkPassword(*it, command.c_str());
+          }
+          else
+          {
+            handleMessage(*it, command);
+          }
         }
         ++it;
       }
