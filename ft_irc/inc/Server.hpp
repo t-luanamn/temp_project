@@ -62,6 +62,7 @@ class Server
     void setInvite(Client *client, const std::vector<std::string> &tokens);
     void kick(Client *client, const std::vector<std::string> &tokens);
     void setTopic(Client *client, const std::vector<std::string> &tokens);
+    void printStatus(Client *client);
 
 };
 
