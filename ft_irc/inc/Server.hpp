@@ -40,6 +40,7 @@ class Server
     std::vector<Client *> clientList;
     std::vector<Channel *> channelList;
     Log log;
+    bool _shutdown;
 
     void handleClientMessages(fd_set &readfds);
     void handleMessage(Client *client, const std::string &message);
@@ -63,7 +64,9 @@ class Server
     void kick(Client *client, const std::vector<std::string> &tokens);
     void setTopic(Client *client, const std::vector<std::string> &tokens);
     void printStatus(Client *client);
-
+    void sendHelp(Client *client);
+    void shutdownServer(Client *client);
+    void shutdownServer();
 };
 
 // Utility functions

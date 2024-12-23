@@ -16,8 +16,9 @@ int main(int ac, char **av)
     {
         return 1;
     }
-
-    Server server("My_IRC_Serv", atoi(av[1]), av[2]);
-    server.start();
+    
+    Server *server = new Server("My_IRC_Serv", atoi(av[1]), av[2]);
+    //Server server("My_IRC_Serv", atoi(av[1]), av[2]);
+    server->start();
     return 0;
 }

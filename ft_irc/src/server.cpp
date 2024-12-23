@@ -7,7 +7,7 @@ https://datatracker.ietf.org/doc/html/rfc2813
 #include "../inc/Server.hpp"
 
 Server::Server(const std::string &name, int port, const std::string &password)
-    : _servName(name), _port(port), _password(password)
+    : _servName(name), _port(port), _password(password), _shutdown(false)
 {
   log.nl("Server is created", G);
   log.out("Server listening on Port: ", G);
@@ -55,20 +55,11 @@ Server::Server(const std::string &name, int port, const std::string &password)
 
 Server::~Server()
 {
+  // Close the server file descriptor
   close(_serverfd);
-  for (std::vector<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
-  {
-    delete *it;
-  }
-  clientList.clear();
-  
-  for (std::vector<Channel *>::iterator it = channelList.begin(); it != channelList.end(); ++it)
-  {
-    delete *it;
-  }
-  channelList.clear();
-  
-  log.nl("Server is destroyed", R);
+
+  // Log the shutdown
+  log.nl("Server has been shut down.");
 }
 
 /*
@@ -85,6 +76,11 @@ void Server::start()
     FD_ZERO(&readfds);
     FD_SET(_serverfd, &readfds);
     int maxfd = _serverfd;
+
+    if (_shutdown)
+    {
+      shutdownServer();
+    }
 
     // Add client sockets to fd_set:
     if (!clientList.empty())

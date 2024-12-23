@@ -77,6 +77,14 @@ void Server::execute(Client *client, const std::vector<std::string> &tokens, con
   {
     printStatus(client);
   }
+  else if (command == "SHUTDOWN")
+  {
+    shutdownServer(client);
+  }
+  else if (command == "HELP")
+  {
+    sendHelp(client);
+  }
   else
   {
     std::string msg = R;
