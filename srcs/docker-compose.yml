@@ -1,0 +1,113 @@
+name: tl_inception
+
+services:
+  nginx:
+    build: requirements/nginx
+    container_name: nginx
+    image: nginx
+    ports:
+      - "443:443"
+    extra_hosts:
+      - "tluanamn.42.fr:127.0.0.1"
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - wordpress
+    networks:
+      - frontend
+    restart: on-failure
+
+  wordpress:
+    build: requirements/wordpress
+    container_name: wordpress
+    image: wordpress
+    ports:
+      - "9000:9000"
+    environment:
+      WORDPRESS_DB_HOST: "mariadb:3306"
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      BRAND: ${BRAND}
+      WORDPRESS_ADMIN: /run/secrets/wp_admin
+      WORDPRESS_ADMIN_PASSWORD: /run/secrets/wp_admin_pw
+      WORDPRESS_ADMIN_EMAIL: ${AD_EMAIL}
+      WP_USER: /run/secrets/wp_user
+      WP_USER_EMAIL: ${EMAIL}
+      WP_USER_PASSWORD: /run/secrets/wp_password
+      MYSQL_DATABASE: "wordpress"
+      MYSQL_USER: /run/secrets/db_user
+      MYSQL_PASSWORD: /run/secrets/db_password
+    secrets:
+      - wp_user
+      - db_user
+      - db_password
+      - wp_password
+      - wp_admin
+      - wp_admin_pw
+    working_dir: /var/www/html
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - mariadb
+    networks:
+      - frontend
+      - backend
+    restart: on-failure
+
+  mariadb:
+    build: requirements/mariadb
+    container_name: mariadb
+    image: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: /run/secrets/db_root_password
+      MYSQL_DATABASE: "wordpress"
+      MYSQL_USER: /run/secrets/db_user
+      MYSQL_PASSWORD: /run/secrets/db_password
+    secrets:
+      - db_root_password
+      - db_user
+      - db_password
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - backend
+    restart: on-failure
+
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_user:
+    file: ../secrets/db_user.txt
+  db_password:
+    file: ../secrets/db_password.txt
+  wp_user:
+    file: ../secrets/wp_user.txt
+  wp_password:
+    file: ../secrets/wp_password.txt
+  wp_admin:
+    file: ../secrets/wp_admin.txt
+  wp_admin_pw:
+    file: ../secrets/wp_admin_pw.txt
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+volumes:
+  mariadb:
+    name: "mariadb"
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/tanapoom/data/database
+      o: bind
+  wordpress:
+    name: "wordpress"
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/tanapoom/data/website
+      o: bind
