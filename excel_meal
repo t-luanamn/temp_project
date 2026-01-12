@@ -1,0 +1,37 @@
+In Summary!
+=LET(
+data,
+VSTACK(
+FILTER(Breakfast!B:C, Breakfast!A:A=TRUE),
+FILTER(Lunch!B:C, Lunch!A:A=TRUE),
+FILTER(Dinner!B:C, Dinner!A:A=TRUE)
+),
+data
+)
+
+------
+
+=LET(
+    GetItems, LAMBDA(sheet_range, flag_range, label,
+        IFERROR(
+            HSTACK(EXPAND(label, ROWS(FILTER(sheet_range, flag_range=TRUE)), , label), FILTER(sheet_range, flag_range=TRUE)),
+            {"",""}
+        )
+    ),
+    Combined, VSTACK(
+        GetItems(Breakfast!B2:C100, Breakfast!A2:A100, "Breakfast"),
+        GetItems(Lunch!B2:C100, Lunch!A2:A100, "Lunch"),
+        GetItems(Dinner!B2:C100, Dinner!A2:A100, "Dinner")
+    ),
+    FILTER(Combined, CHOOSECOLS(Combined, 2) <> "")
+)
+
+Why this version is better:
+Error Handling: By using IFERROR, the formula won't crash if you haven't picked a breakfast yet.
+
+Context: It uses HSTACK and EXPAND to automatically add the word "Breakfast", "Lunch", or "Dinner" next to the items.
+
+Dynamic Range: It assumes your data goes down to row 100, but it filters out the empty rows at the end so your summary stays tight.
+
+Quick Setup Tip
+When using VSTACK with FILTER, ensure your columns (B and C) match across all sheets. If "Breakfast" has 2 columns of data but "Lunch" only has 1, VSTACK will return an error.
